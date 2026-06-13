@@ -1,0 +1,43 @@
+#!/bin/bash
+# === pre-commit hook：提交前运行 lint + self-check ===
+# 由 scripts/install-hooks.sh 自动安装到 .git/hooks/pre-commit
+
+HOOK_PATH="$(readlink -f "$0" 2>/dev/null || realpath "$0")"
+ROOT_DIR="$(cd "$(dirname "$HOOK_PATH")/.." && pwd)"
+LINT_SCRIPT="$ROOT_DIR/scripts/lint-knowledge-base.sh"
+SELFCHECK_SCRIPT="$ROOT_DIR/scripts/self-check.sh"
+
+# 1. Lint（格式检查）
+if [ -f "$LINT_SCRIPT" ]; then
+    if ! bash "$LINT_SCRIPT"; then
+        echo ""
+        echo "========================================"
+        echo " ❌ lint 检查未通过，commit 已阻止"
+        echo " 修复后重新执行 git commit"
+        echo " 如需跳过检查: git commit --no-verify"
+        echo "========================================"
+        exit 1
+    fi
+fi
+
+# 2. Self-check（结构健康）
+if [ -f "$SELFCHECK_SCRIPT" ]; then
+    RESULT=$(bash "$SELFCHECK_SCRIPT" 2>&1)
+    EXIT_CODE=$?
+    echo "$RESULT"
+    # S5 Git 在 commit 过程中必然显示"未提交"，忽略它
+    FAIL_COUNT=$(echo "$RESULT" | grep -c "FAIL:" || true)
+    # 排除 S5（Git 清洁度在 commit 过程中天然 FAIL）
+    S5_FAIL=$(echo "$RESULT" | grep -c "S5.*FAIL" || true)
+    REAL_FAIL=$((FAIL_COUNT - S5_FAIL))
+    if [ "$REAL_FAIL" -gt 0 ]; then
+        echo ""
+        echo "========================================"
+        echo " ❌ self-check 发现 $REAL_FAIL 项问题，commit 已阻止"
+        echo " 修复后重新执行 git commit"
+        echo "========================================"
+        exit 1
+    fi
+fi
+
+exit 0

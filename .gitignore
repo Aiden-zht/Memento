@@ -1,0 +1,50 @@
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Logs
+*.log
+
+# Temp files
+*.tmp
+*.swp
+*~
+
+# Environment
+.env
+.env.local
+
+# Build
+dist/
+build/
+
+# Pipeline intermediate output (不入 git)
+output/
+*.state.json
+kpi.json
+.last_seen_commit
+tmp/
+
+# Brainstorming artifacts
+.superpowers/
+
+# Obsidian (全目录忽略，插件二进制不入 git)
+.obsidian/
+
+# 备份目录
+*.bak/
+
+# 设计文档（不属于知识库内容）
+docs/
