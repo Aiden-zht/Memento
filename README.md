@@ -98,10 +98,7 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 
 ### 1. 拿到 Memento
 
-```bash
-git clone https://github.com/Aiden-zht/Memento.git
-cd Memento
-```
+Fork 本仓库到你自己的 GitHub，然后：
 
 ### 2. 扔文章进去
 

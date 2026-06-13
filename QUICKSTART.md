@@ -1,15 +1,20 @@
 # Quick Start
 
-## 你会用到的三句话
+## 你会用到的三件事
+
+**1. Fork 到自己的仓库**
+
+点右上角 Fork → 归你自己。
+
+**2. 扔文章**
+
+```
+把你的文件拖进 inbox/ 文件夹
+```
+
+**3. 验证**
 
 ```bash
-# 1. 拿到 Memento
-git clone https://github.com/Aiden-zht/Memento.git
-
-# 2. 扔文章
-cp 你的文件.md Memento/inbox/
-
-# 3. 验证
 cd Memento && bash scripts/self-check.sh
 ```
 
