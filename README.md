@@ -96,35 +96,49 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 
 ## 快速开始
 
-### 给人
+### 1. 拿到 Memento
 
 ```bash
-# 1. 把文章扔进 inbox/
-# 2. 对 Agent 说：消化 inbox
-# 3. 通过对话建立规范，Agent 自己整理
+git clone https://github.com/Aiden-zht/Memento.git
+cd Memento
 ```
 
-### 给 Agent
+### 2. 扔文章进去
+
+把你手头的任何文档——规范、笔记、参考文章——拖进 `inbox/` 文件夹。
 
 ```bash
-cd /path/to/memento
-git pull origin master
+cp ~/Desktop/我的CAD规范.md inbox/
 ```
 
-然后读 `AGENTS.md`，它指向 `任务类型索引`，剩下的自动走。
+然后对 AI 说：**"消化 inbox"**。AI 会自己读、自己分类、自己补格式、自己入索引。多主题的文章会自动拆分成多个文件。
 
-### 验收测试
+### 3. 通过对话建立规范
+
+不用自己写 YAML frontmatter、不用管目录结构。直接跟 AI 说：
+
+> "以后所有发布内容前，必须先跑一遍校验"
+
+AI 会在 `规章制度/` 或 `业务/` 下创建对应的规范文件，补好格式，更新索引。
+
+### 4. 交给 Agent
+
+Agent 拿到这个仓库后，只需要：
 
 ```bash
-# 结构健康（30秒）
+cd Memento
+git pull origin main
+```
+
+然后读 `AGENTS.md`，它会自己找到任务类型索引，按规范执行。换模型、换平台、换机器——不用重新教。
+
+### 5. 验证一切正常
+
+```bash
 bash scripts/self-check.sh
-
-# 格式审计
-bash scripts/lint-knowledge-base.sh
-python3 scripts/audit-agent-usability.py
-
-# 功能验证：发 T1-T5 prompt 给零上下文 Agent（见 09-新Agent初始化#第七步）
 ```
+
+8/8 = 知识库健康，放心用。
 
 ---
 
