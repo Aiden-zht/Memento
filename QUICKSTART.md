@@ -18,6 +18,14 @@ git clone https://github.com/你的用户名/Memento.git
 
 **4. 对 Agent 说**
 
+先让它认识 Memento：
+
+```
+读一下 /path/to/Memento/AGENTS.md，以后按这里的规范工作
+```
+
+然后就可以用了：
+
 ```
 消化 inbox
 ```
