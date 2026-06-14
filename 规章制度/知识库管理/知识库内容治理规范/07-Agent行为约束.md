@@ -5,11 +5,11 @@ tags: [知识库, 治理, 规范, Agent]
 category: "规章制度/知识库管理/知识库内容治理规范"
 load: on-demand
 audience: [all]
-provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步]
+provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 业务包发现]
 status: active
 synopsis: "规定 Agent 读写 KB、按需检索、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 13
-changelog: "[Agent自修] §7.6 核心原则新增闭环保证声明：任何自建 skill 只需 requires_provides + kb_refresh_policy 即可自动同步 KB 变更，无需桥接代码"
+version: 14
+changelog: "[Agent自修] 新增业务包发现机制引用和禁止忽略业务包的行为约束"
 versions:
   Agent行为约束: 12
   读取优先级: 3
@@ -92,6 +92,7 @@ Agent 读取知识库时，按以下优先级：
 | 只靠文件名猜规则 | 容易漏读真正规范；必须读任务索引和候选文件 synopsis |
 | 只靠 provides 搜索且搜不到就放弃 | provides 是辅助标签；搜不到时必须用全文搜索兜底 |
 | 用 KB 机制替代 Agent 原生搜索/语义理解/git history | 属于过度设计；KB 只补 Agent 短板，不重造原生能力 |
+| 忽略项目 specs/ 业务包 | 执行业务任务前必须检查当前项目是否有 `specs/index.md`，按 [[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]] 的发现机制加载 |
 
 ## 7.4 规范优化反馈
 
@@ -157,6 +158,10 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 
 必须执行运行时规范对齐的本地实现：
 
+> **业务包**：除 skill/cron/脚本外，项目 `specs/` 业务包的 `index.md` 也必须声明 `depends_on`（等价于 `requires_provides`）和 `kb_refresh_policy: runtime`，执行前读取最新 KB 并判断变更影响。详见 [[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]]。
+
+
+
 | 类型 | 条件 | 示例 |
 |------|------|------|
 | 生产 skill | 依赖 KB 规范才能正确执行 | game-discount-agent、game-content-validator、agent-kpi |
@@ -193,7 +198,7 @@ spec_versions:
 依赖 KB 的 skill、cron、脚本在执行前必须执行：
 
 ```bash
-cd /path/to/memento
+cd /mnt/data/daqian-ai-workshop/references/agent_mem
 git pull origin master
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```
