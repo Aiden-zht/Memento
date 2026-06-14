@@ -5,9 +5,9 @@ tags: [知识库, Agent, 初始化, 冷启动, 入口]
 category: "规章制度/知识库管理"
 load: always
 status: active
-synopsis: "新 Agent 冷启动入口——Memento 零记忆接入的第一步：git pull → 任务类型索引 → 全文搜索 → 按需加载。包含业务包发现机制和创建流程。"
-version: 5
-changelog: "[agent] 新增业务包发现机制和 12-业务包通用设计引用"
+synopsis: "新 Agent 冷启动入口——Memento 零记忆接入的第一步：git pull → 任务模式判定 → 任务类型索引 → 全文搜索 → 按需加载。"
+version: 6
+changelog: "[agent] 新增任务模式判定硬规则：默认普通产出，明确维护才写 KB"
 
 # AGENTS.md — Memento 冷启动入口
 
@@ -15,7 +15,7 @@ changelog: "[agent] 新增业务包发现机制和 12-业务包通用设计引�
 
 ```bash
 cd /path/to/memento
-git pull origin main
+git pull origin master
 ```
 
 然后先阅读：
@@ -31,12 +31,12 @@ git pull origin main
 执行任务时使用固定流程：
 
 ```text
-任务类型索引 → 关键词全文搜索 → 读候选 frontmatter → 按 synopsis/load/status 筛选 → 按需读取正文 → 执行 → 必要时 lint/commit/push
+任务模式判定（普通产出 / KB 使用 / KB 维护）→ 任务类型索引 → 关键词全文搜索 → 读候选 frontmatter → 按 synopsis/load/status 筛选 → 按需读取正文 → 执行 → 必要时 lint/commit/push
 ```
 
 ## 业务任务
 
-执行业务任务时，额外执行：
+执行业务任务（如"发布文章"）时，额外执行：
 
 1. 检查当前项目目录是否有 `specs/index.md`
 2. 若存在 → 读 `depends_on` → 加载 Memento 对应规范 → 加载 `specs/rules/` 和 `specs/references/`
@@ -50,10 +50,11 @@ git pull origin main
 
 硬规则：
 
+- 执行前先判定任务模式：默认普通产出；只有明确 KB 维护意图才允许修改 Memento。
 - 不靠记忆猜规范；先查 KB。
 - `provides` 只是辅助标签；搜不到时用全文搜索兜底。
 - 新增或修改 `.md` 必须有 frontmatter、`synopsis`、`version`、`changelog`。
 - 改 KB 后必须运行 `bash scripts/lint-knowledge-base.sh`。
-- KB 改动必须 `git add -A` → `git commit` → `git push`。
+- KB 改动必须 `git add -A` → `git commit` → `git push`；普通产出模式和 KB 使用模式禁止 git 副作用。
 - 中间状态、生成产物、日志、图片二进制不入 KB。
 - 业务规则不入本仓库，放入对应项目 `specs/` 目录。

@@ -1,28 +1,62 @@
 ---
 title: "Agent 行为约束"
-date: "2026-06-13"
+date: "2026-06-14"
 tags: [知识库, 治理, 规范, Agent]
 category: "规章制度/知识库管理/知识库内容治理规范"
 load: on-demand
 audience: [all]
-provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 业务包发现]
+provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 业务包发现, 推送纪律, 用户产物优先, 任务模式判定]
 status: active
 synopsis: "规定 Agent 读写 KB、按需检索、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 14
-changelog: "[Agent自修] 新增业务包发现机制引用和禁止忽略业务包的行为约束"
+version: 16
+changelog: "[Agent自修] 新增用户产物优先原则和普通产出/KB使用/KB维护三模式边界"
 versions:
-  Agent行为约束: 12
+  Agent行为约束: 13
   读取优先级: 3
   写入检查: 3
-  禁止行为: 5
+  禁止行为: 6
   内容寻址: 4
   规范优化反馈: 4
   职责边界: 2
   KB-memory仲裁: 1
-  本地实现同步: 2
+  本地实现同步: 3
+  用户产物优先: 1
+  任务模式判定: 1
 ---
 
 # Agent 行为约束
+
+## 7.0 用户产物优先与任务模式边界
+
+默认情况下，用户请求生成的内容属于用户产物，而不是 Memento 知识库资产。Agent 必须先按用户意图、目标路径、是否明确要求固化来判断任务模式，再决定是否读取或修改 KB。
+
+### 7.0.1 用户产物优先原则
+
+- 内容“关于知识库 / Agent / 规范 / 治理 / Memento / SOUL / 角色”不等于内容“属于知识库”。
+- 内容“可复用”不等于需要立即固化。
+- 读取 Memento 作为执行参考，不等于允许修改 Memento。
+- 修改 Memento 不等于自动获得 `git add / commit / push` 授权。
+
+默认按普通用户产物交付的对象包括：文章、SOUL、角色、提示词、配置、方案、模板、草稿、普通文件。若用户指定外部 profile、普通文件路径或项目路径，Agent 应按指定路径交付，不得自行改写为 Memento 知识库落点。
+
+### 7.0.2 三种任务模式
+
+| 模式 | 触发条件 | 允许动作 | 禁止动作 |
+|------|----------|----------|----------|
+| 普通产出模式 | 用户要求生成、撰写、设计、创建、整理、输出或保存普通产物；这是默认模式 | 输出给用户，或写入用户明确指定路径 | 修改 Memento、移动到 inbox、固化为规范、`git add / commit / push` |
+| KB 使用模式 | 用户要求参考、遵守、依据、检查 Memento / KB 规则，但未要求修改 KB | 只读 Memento，按已有规则完成用户任务 | 新增、移动、修改、固化 KB 资产；`git add / commit / push` |
+| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 agent_mem、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
+
+BLOCKING：不得仅凭“知识库、规范、Agent、治理、Memento、SOUL、角色”等关键词进入 KB 维护模式；不得仅凭“可复用”“其他 Agent 可能有用”自动固化到 KB。
+
+### 7.0.3 git 副作用门禁
+
+`git add / commit / push` 是独立高副作用动作。只有以下情况允许执行：
+
+1. 用户明确要求提交、推送或完成 KB 维护闭环；或
+2. 当前任务已经明确进入 KB 维护模式，且对应 KB 维护流程明文要求提交推送。
+
+普通产出模式和 KB 使用模式下，禁止执行 `git add / commit / push`。
 
 ## 7.1 写入前检查
 
@@ -93,6 +127,7 @@ Agent 读取知识库时，按以下优先级：
 | 只靠 provides 搜索且搜不到就放弃 | provides 是辅助标签；搜不到时必须用全文搜索兜底 |
 | 用 KB 机制替代 Agent 原生搜索/语义理解/git history | 属于过度设计；KB 只补 Agent 短板，不重造原生能力 |
 | 忽略项目 specs/ 业务包 | 执行业务任务前必须检查当前项目是否有 `specs/index.md`，按 [[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]] 的发现机制加载 |
+| **业务包/规范改动后不 push** | **任何对 KB 业务包（`specs/`）或规范文件的修改，必须在声明完成前执行 `git add -A → commit → push`。遗漏推送视为违规** | 本次事故：修改 `content_generator.py` 逻辑后未推送 KB，导致规范与实现脱节 |
 
 ## 7.4 规范优化反馈
 
@@ -137,9 +172,9 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 | Agent 专属配置 | 单 Agent 的 prompt 片段、shell 别名 | Agent 工作区或 dotfiles |
 | 临时分析 | 一次性调研、调试记录 | 会话内消化，不入库 |
 
-例外：`业务/{领域}/` 下的流程、模板、质量标准被多个 Agent 共享使用，属于业务知识，应入 KB。
+例外：项目 `specs/` 业务包中的流程、模板、质量标准，在用户明确创建业务包或固化业务规则时，属于业务知识，应进入对应业务包，不进入 Memento 核心 KB。
 
-判断标准：如果其他 Agent 也需要知道，它就是通用内容，应该入库；如果只有单个 Agent 自己用，它是本地实现，不入库。
+判断标准：只有“多 Agent 长期共享 + 用户明确要求固化”的内容才进入 KB 或业务包；如果只是本次任务产物、候选提示词、SOUL、角色草稿、一次性方案，默认按用户产物交付，不因“其他 Agent 可能有用”自动入库。
 
 ## 7.6 本地实现运行时规范对齐契约
 
@@ -164,7 +199,7 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 
 | 类型 | 条件 | 示例 |
 |------|------|------|
-| 生产 skill | 依赖 KB 规范才能正确执行 | game-discount-agent、game-content-validator、agent-kpi |
+| 生产 skill | 依赖 KB 规范才能正确执行 | example-agent、validator-agent、kpi-agent |
 | cron job | 定时执行业务流程或规范校验 | 每日 Steam 折扣文章流水线 |
 | 本地脚本 | 代码中硬编码了 KB 规则、阈值、流程 | content_generator.py、validator 脚本 |
 
@@ -198,7 +233,7 @@ spec_versions:
 依赖 KB 的 skill、cron、脚本在执行前必须执行：
 
 ```bash
-cd /mnt/data/daqian-ai-workshop/references/agent_mem
+cd /path/to/memento
 git pull origin master
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```

@@ -8,10 +8,10 @@ audience: [all]
 provides: [Agent初始化, 规范加载, Agent引导, 本地实现同步]
 status: active
 synopsis: "新 Agent 启动时如何拉取 KB、读任务索引、按全文搜索+synopsis 加载规范，并处理 skill/cron 的 requires_provides。"
-version: 16
-changelog: "[Agent自修] 去掉 S4 豁免说明（目录深度已调至 5 层）"
+version: 17
+changelog: "[Agent自修] 业务解耦后初始化下一步改为项目 specs 业务包"
 versions:
-  Agent初始化: 13
+  Agent初始化: 14
   规范加载: 3
   Agent引导: 4
   本地实现同步: 3
@@ -133,7 +133,7 @@ python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 
 1. [[规章制度/Agent协作/多Agent知识库协作规范]] — git 协作细节
 2. [[规章制度/知识库管理/知识库内容治理规范/07-Agent行为约束]] — 行为规则和运行时规范对齐契约
-3. 对应业务目录（如 `业务/写作/公众号/`）的 workflow 与质量规范
+3. 对应项目业务包 `specs/index.md` 声明的 workflow 与质量规范
 
 ---
 

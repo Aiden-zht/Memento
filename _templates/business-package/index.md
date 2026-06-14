@@ -1,9 +1,19 @@
 ---
+title: "业务包骨架模板"
+date: "2026-06-14"
+tags: [模板, 业务包, specs]
+category: "_templates/business-package"
+load: template
+audience: [agent]
+provides: [业务包模板]
+status: scaffold
+synopsis: "业务包 index.md 骨架模板：用于 Agent 在项目 specs/ 下创建独立业务包入口。"
+version: 1
+changelog: "[Agent自修] 补齐模板 frontmatter，满足 Agent 可用性审计"
 business: ""
 domain: []
 description: ""
 depends_on: []
-provides: []
 kb_refresh_policy: runtime
 created: ""
 ---

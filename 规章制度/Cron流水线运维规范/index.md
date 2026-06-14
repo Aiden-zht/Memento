@@ -8,10 +8,10 @@ audience: [all]
 provides: [Cron运维索引]
 status: active
 synopsis: "Cron 流水线运维入口：汇总定时任务架构、超时重试、链路追踪、异常处理和脚本引用规则。"
-version: 7
-changelog: "[Agent自修] 更新跨库引用：移除公开版不存在的文件引用"
+version: 8
+changelog: "[Agent自修] 开源版脱敏：移除具体项目业务包示例与私有知识链接"
 versions:
-  Cron运维索引: 6
+  Cron运维索引: 7
 ---
 
 # Cron 流水线运维规范索引
@@ -27,6 +27,5 @@ Cron流水线的架构设计、超时策略、链路追踪和异常处理规范�
 
 ## 相关文档
 
-- 写作域定时任务规范 — 写作域定时任务规范（任务定义、调度规则、典型场景）
-- 项目 `tools/game-discount-agent/specs/` 业务包（每日文章自动生成流程） — 定时任务触发的完整生命期
+- 项目 `tools/<your-project>/specs/` 业务包（定时任务触发的业务流程） — 定时任务触发的完整生命期
 - [[规章制度/Agent协作/多Agent知识库协作规范]] — Git 协作

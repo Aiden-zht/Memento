@@ -8,10 +8,10 @@ audience: [all]
 provides: [多Agent协作, git协作规范, session启动检查, commit规范, 冲突处理]
 status: active
 synopsis: "多Agent知识库协作规范：多个 Agent/会话共用 Git 知识库时的变更感知、commit 格式、冲突处理；涉及 KB 协作时按需加载。"
-version: 8
-changelog: "[Agent自修] 将协作规范从默认必读改为按任务加载，移除旧 L1 全量加载表述 7→8"
+version: 9
+changelog: "[Agent自修] 开源版脱敏：将具体项目路径改为通用项目占位"
 versions:
-  多Agent协作: 7
+  多Agent协作: 8
   git协作规范: 4
   session启动检查: 4
   commit规范: 4
@@ -40,7 +40,7 @@ versions:
 每个 Agent 在操作知识库前，必须执行三步：
 
 ```bash
-cd {{WORKSPACE}}/references/memento
+cd {{WORKSPACE}}/references/agent_mem
 
 # Step 1: 拉取最新
 git pull origin master
@@ -153,7 +153,7 @@ git push origin master
 
 ## 7. 相关文档
 
-- 游戏折扣Agent — 项目协作（项目文档在 `{{WORKSPACE}}/tools/game-discount-agent/`）
+- 业务 Agent — 项目协作（项目文档在 `{{WORKSPACE}}/tools/<your-project>/`）
 
 ---
 
@@ -163,7 +163,7 @@ git push origin master
 
 Agent 调用方式：
 ```bash
-bash {{WORKSPACE}}/references/memento/scripts/pull-and-check.sh
+bash {{WORKSPACE}}/references/agent_mem/scripts/pull-and-check.sh
 ```
 
 输出示例：
