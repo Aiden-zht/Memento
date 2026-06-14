@@ -12,19 +12,19 @@ provides-search — 辅助 provides 标签搜索工具
 
 用法：
   python3 scripts/provides-search.py 标签1 标签2 ...
-  python3 scripts/provides-search.py 质量检查 游戏折扣
+  python3 scripts/provides-search.py 质量检查 示例业务
   python3 scripts/provides-search.py --files 标签名  # 仅输出文件路径
   python3 scripts/provides-search.py --synopsis 标签1 标签2  # 摘要模式：title + synopsis + provides + version + load
 
 输出 JSON：
 
   {
-    "query": ["质量检查", "游戏折扣"],
+    "query": ["质量检查", "示例业务"],
     "results": {
       "质量检查": [
         {"file": "...", "frontmatter": {...}, "matches": ["质量检查", "质量检查规则"]}
       ],
-      "游戏折扣": [...]
+      "示例业务": [...]
     },
     "not_found": ["不存在的标签"],
     "summary": "2 files across 2 tags"
@@ -33,7 +33,7 @@ provides-search — 辅助 provides 标签搜索工具
 --synopsis 模式输出更紧凑（用于 cron prompt 注入）：
 
   {
-    "query": ["质量检查", "游戏折扣"],
+    "query": ["质量检查", "示例业务"],
     "results": {
       "质量检查": [
         {

@@ -15,7 +15,7 @@ changelog: "[agent] 新增任务模式判定硬规则：默认普通产出，明
 
 ```bash
 cd /path/to/memento
-git pull origin master
+git pull origin main
 ```
 
 然后先阅读：

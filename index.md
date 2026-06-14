@@ -1,111 +1,69 @@
 ---
 title: "Memento 索引"
-date: "2026-06-14"
-tags: [索引, 知识库, CAD, 团队沟通, Python, Nginx]
+date: "2026-06-15"
+tags: [索引, 知识库, Memento]
 category: "索引"
 load: index
 audience: [all]
 provides: [知识库索引, 导航目录]
 status: active
-synopsis: "Memento 总入口：指向 AGENTS、任务索引、知识库治理、规章制度、知识域（含 写作方法论、CAD制图、团队沟通、Python打包部署、Nginx配置），业务包独立于项目 specs/。Agent 冷启动后的导航页。"
-version: 11
-changelog: "[agent] 业务解耦：业务内容移出 KB，写作通用移至知识/写作方法论/，新增业务包通用设计索引"
+synopsis: "Memento 总入口：指向 AGENTS、Quickstart、FAQ、贡献说明、公开示例、任务索引、知识库治理和规章制度。Agent 冷启动后的导航页。"
+version: 12
+changelog: "[agent] 开源版清理：统一公开入口并移除私有知识域索引"
 versions:
-  知识库索引: 7
-  导航目录: 2
+  知识库索引: 8
+  导航目录: 3
 ---
 
-# Agent Mem 知识库索引
+# Memento 索引
 
-> 最后更新: 2026-06-10
-> Git: https://gitee.com/aidenzht/agent_mem.git
-> **目录入口**：[[规章制度/index]] · [[知识/index]]
-> **冷启动入口**：详见 [[AGENTS]]
-> **Agent 协作入口**: 详见 [[规章制度/Agent协作/多Agent知识库协作规范]]
-> **内容治理**: 详见 [[规章制度/知识库管理/知识库内容治理规范/index]]
-> **Session 初始化**: 执行 `bash scripts/pull-and-check.sh`
-
----
-
-## 第一层：通用基础设施（必须遵守，按任务加载）
-
-### [[规章制度/Agent协作/多Agent知识库协作规范]]
-git 协作、commit 格式、冲突处理、会话初始化流程（repo 内配套脚本 `scripts/pull-and-check.sh`，如无法访问，按规范中的手动步骤执行即可）
-
-### [[规章制度/知识库管理/知识库内容治理规范/index]]
-知识库的「宪法」：内容边界、文件规范、生命周期
-
-### 质量评分规范
-详见 [[知识/写作方法论/07-KPI评分通用框架]] — 所有内容生产 Agent 必须进行质量评分，评分历史由 Agent 自行维护
-
-> **日常操作备案**：所有 Agent 必须有操作备案记录（如 `操作备案.md`），确保历史操作可溯源。备案文件由 Agent 自行管理，不入知识库。
+> Git: https://github.com/Aiden-zht/Memento.git
+> **冷启动入口**：[[AGENTS]]
+> **快速开始**：[[QUICKSTART]]
+> **常见问题**：[[FAQ]]
+> **贡献说明**：[[CONTRIBUTING]]
+> **公开示例**：[[examples/index]]
 
 ---
 
-## 第二层：跨领域知识
+## 入口
 
-### [[知识/GPU分享/index]]
-GPU Operator、运维、NVLink、NCCL、压测验收、面试经验
-
-### [[知识/面试经验/index]]
-5 家公司面经（无问芯穹、硅基流动、千寻智能、算秩未来、智源）
-
-### [[知识/面试经验/面试经验格式]]
-标准化面经记录格式
-
-### [[知识/CAD制图/index]]
-CAD 标准制图流程、图层命名规范、常见错误
-
-### [[知识/团队沟通/index]]
-每日站会规范、飞书看板更新流程
-
-### [[知识/Python打包部署/index]]
-pyinstaller 打包规范、Win7 兼容性测试
-
-### [[知识/Nginx/index]]
-Nginx 反向代理 upstream、worker、gzip、SSL 配置要点
-
----
-
-## 第三层：业务包（独立维护）
-
-> **业务内容不在 Memento 中。** 各项目在自身目录的 `specs/` 中独立维护业务规则和参考。见 [[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]]。
->
-> 已有业务包：`tools/<your-project>/specs/`（项目业务包示例）
-
----
-
-### [[知识/写作方法论/index]]
-
-写作通用方法：双 Agent 流水线、质量检查维度、合规红线、SEO、数据反馈、审核标记、KPI 评分框架、定时任务规范。
-
-| 文档 | 说明 |
+| 文件 | 用途 |
 |------|------|
-| [[知识/写作方法论/01-写作流程通用规范]] | 双 Agent 流水线、Fix Loop、异常处理 |
-| [[知识/写作方法论/02-质量检查通用标准]] | 5 大检查维度、严重级别定义 |
-| [[知识/写作方法论/03-合规通用红线]] | 版权、AI 披露、禁止内容 |
-| [[知识/写作方法论/04-SEO通用规范]] | 标题优化、关键词策略 |
-| [[知识/写作方法论/05-数据反馈通用机制]] | 闭环原理、驱动行为改进 |
-| [[知识/写作方法论/06-审核标记通用规范]] | 标记格式、自动处理 |
-| [[知识/写作方法论/07-KPI评分通用框架]] | 评分维度、权重、计分规则 |
-| [[知识/写作方法论/08-定时任务通用规范]] | 定时调度、任务定义、写作域场景 |
+| [[AGENTS]] | Agent 冷启动入口 |
+| [[README]] | 项目介绍 |
+| [[QUICKSTART]] | 人和 Agent 的最短上手流程 |
+| [[FAQ]] | 常见问题与故障处理 |
+| [[CONTRIBUTING]] | 贡献规则与 PR 前检查 |
+| [[examples/index]] | 公开脱敏示例 |
 
----
+## 规章制度
 
-## 技术文档
+| 目录 | 用途 |
+|------|------|
+| [[规章制度/index]] | 规章制度总索引 |
+| [[规章制度/知识库管理/index]] | Memento 自身治理 |
+| [[规章制度/知识库管理/任务类型索引]] | 任务类型到规范的路由入口 |
+| [[规章制度/知识库管理/知识库内容治理规范/index]] | 内容边界、文件规范、生命周期、业务包设计 |
+| [[规章制度/Agent协作/index]] | 多 Agent git 协作规范 |
+| [[规章制度/Cron流水线运维规范/index]] | 定时流水线通用运维规范 |
 
-> `技术文档/` 已移除。工具使用手册由 Agent 原生能力提供，不存入知识库。
+## 业务包
 
----
+Memento 核心仓库不保存具体业务规则。具体业务在项目自己的 `specs/` 中维护。
 
-## 🔄 维护规范
+业务包标准见：[[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]]
 
-1. **每次操作前**: `git pull`
-2. **修改后**: `git add . && git commit -m "描述" && git push`
-3. **文件命名**: 清晰中文标题 + `.md` 扩展名
-4. **标签**: YAML front matter `tags: []`，不带 `#`
-5. **双向链接**: 相关文档统一使用纯完整路径 wiki-link；目录索引必须显式写 `/index`，不使用 `|显示文本`，不把占位示例写成真实双链
-6. **Frontmatter**: 每个文件必须包含 `title`、`date`、`tags`、`category`
-7. **内容边界**: 只存规范/参考/记录，不存中间结果（state.json、output/、临时分析）— 详见 [[规章制度/知识库管理/知识库内容治理规范/index]]
-8. **过期处理**: 过时且无工作流依赖的内容直接删除，历史由 git history 保留；仅确有短期参考价值时标记 `status: deprecated`
-9. **文件大小**: 单文件不超过 500 行，超过则拆分
+最小示例见：[[examples/minimal-business-specs/index]]
+
+## 维护命令
+
+```bash
+git pull origin main
+bash scripts/install-hooks.sh
+bash scripts/lint-knowledge-base.sh
+python3 scripts/audit-agent-usability.py
+bash scripts/self-check.sh
+```
+
+修改后按贡献说明提交 PR 或推送到自己的 fork。

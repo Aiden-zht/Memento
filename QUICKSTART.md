@@ -27,7 +27,7 @@ git clone https://github.com/你的用户名/memento.git
 
 或者创建业务：
 ```
-对 Agent 说：帮我创建一个公众号写作业务
+对 Agent 说：帮我创建一个内容发布写作业务
 ```
 
 或者建立规范：

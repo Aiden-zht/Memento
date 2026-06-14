@@ -43,7 +43,7 @@ echo ""
 # 执行
 git add -A
 git commit -m "${COMMIT_MSG}"
-git push origin master
+git push origin main
 
 echo ""
 echo "✅ 已提交并推送"

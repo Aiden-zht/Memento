@@ -39,25 +39,21 @@ Memento 不是文档仓库。它是一个**自描述、自修复、自验收**�
 
 **换 Agent 不换脑子。** 换新模型、换新平台、换新机器——Agent 拿到这个仓库就能干活。技能自修复、规范自感知，不需要重新调教。
 
-**业务无关。** Memento 只管规范和通用知识。公众号写作、Steam 折扣处理——那些是业务项目 `specs/` 的事。Memento 定义业务包标准，各项目按标准创建，Agent 自动识别。
+**业务无关。** Memento 只管规范和通用知识。内容发布写作、示例业务处理——那些是业务项目 `specs/` 的事。Memento 定义业务包标准，各项目按标准创建，Agent 自动识别。
 
 ---
 
 ## 架构
 
 ```
-agent_mem/
+memento/
 ├── AGENTS.md                          ← Agent 冷启动入口
 ├── inbox/                             ← 人的投递口（扔文章就行）
 ├── 规章制度/                          ← Agent 必须遵守的规则
 │   ├── Agent协作/                    ← 多 Agent git 协作规范
 │   ├── 知识库管理/                   ← KB 自身治理（定位、格式、生命周期、回滚）
 │   └── Cron流水线运维规范/           ← 定时任务运维
-├── 知识/                             ← 跨领域通用知识
-│   ├── 写作方法论/                   ← 写作通用规范（流程、质量、合规、KPI）
-│   ├── GPU分享/
-│   ├── 面试经验/
-│   └── CAD制图/等
+├── 知识/                             ← 用户自建跨领域通用知识（公开版默认不内置）
 ├── _templates/                        ← 通用模板
 │   └── business-package/             ← 业务包骨架（Agent 创建新业务时以此为模板）
 ├── scripts/                          ← 工具链（零 token 消耗）
@@ -107,34 +103,22 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 
 ## 快速开始
 
-### 给人
-
 ```bash
-# 1. git clone https://gitee.com/aidenzht/agent_mem.git
-# 2. 把文章扔进 inbox/
-# 3. 对 Agent 说：消化 inbox
-# 4. 通过对话建立规范，Agent 自己整理
-```
-
-### 给 Agent
-
-```bash
-cd /path/to/agent_mem
-git pull origin master
-```
-
-然后读 `AGENTS.md`，它指向 `任务类型索引`，剩下的自动走。
-
-### 验收测试
-
-```bash
-# 结构健康（30秒）
+git clone https://github.com/Aiden-zht/Memento.git
+cd Memento
+bash scripts/install-hooks.sh
 bash scripts/self-check.sh
-
-# 格式审计
-bash scripts/lint-knowledge-base.sh
-python3 scripts/audit-agent-usability.py
 ```
+
+然后让 Agent 读取 `AGENTS.md`。
+
+更多步骤见 [[QUICKSTART]]，常见问题见 [[FAQ]]，贡献说明见 [[CONTRIBUTING]]。
+
+## 公开示例
+
+- [[examples/index]] — 公开脱敏示例入口。
+- [[examples/agent-first-run]] — 新 Agent 首次运行示例。
+- [[examples/minimal-business-specs/index]] — 最小业务包示例。
 
 ---
 

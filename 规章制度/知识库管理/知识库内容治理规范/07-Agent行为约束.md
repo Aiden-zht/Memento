@@ -8,8 +8,8 @@ audience: [all]
 provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 业务包发现, 推送纪律, 用户产物优先, 任务模式判定]
 status: active
 synopsis: "规定 Agent 读写 KB、按需检索、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 16
-changelog: "[Agent自修] 新增用户产物优先原则和普通产出/KB使用/KB维护三模式边界"
+version: 17
+changelog: "[agent] 开源版清理：统一 Memento/GitHub/main 表述并泛化示例业务"
 versions:
   Agent行为约束: 13
   读取优先级: 3
@@ -45,7 +45,7 @@ versions:
 |------|----------|----------|----------|
 | 普通产出模式 | 用户要求生成、撰写、设计、创建、整理、输出或保存普通产物；这是默认模式 | 输出给用户，或写入用户明确指定路径 | 修改 Memento、移动到 inbox、固化为规范、`git add / commit / push` |
 | KB 使用模式 | 用户要求参考、遵守、依据、检查 Memento / KB 规则，但未要求修改 KB | 只读 Memento，按已有规则完成用户任务 | 新增、移动、修改、固化 KB 资产；`git add / commit / push` |
-| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 agent_mem、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
+| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 Memento、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
 
 BLOCKING：不得仅凭“知识库、规范、Agent、治理、Memento、SOUL、角色”等关键词进入 KB 维护模式；不得仅凭“可复用”“其他 Agent 可能有用”自动固化到 KB。
 
@@ -200,7 +200,7 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 | 类型 | 条件 | 示例 |
 |------|------|------|
 | 生产 skill | 依赖 KB 规范才能正确执行 | example-agent、validator-agent、kpi-agent |
-| cron job | 定时执行业务流程或规范校验 | 每日 Steam 折扣文章流水线 |
+| cron job | 定时执行业务流程或规范校验 | 每日 示例业务文章流水线 |
 | 本地脚本 | 代码中硬编码了 KB 规则、阈值、流程 | content_generator.py、validator 脚本 |
 
 不需要接入：纯工具封装、一次性临时脚本、不依赖 KB 规范的 API 调用。
@@ -210,7 +210,7 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 每个依赖 KB 的生产 skill 必须在 frontmatter 声明：
 
 ```yaml
-requires_provides: [公众号发布流程, 质量检查, 图片治理]
+requires_provides: [内容发布流程, 质量检查, 图片治理]
 kb_refresh_policy: runtime
 ```
 
@@ -224,7 +224,7 @@ kb_refresh_policy: runtime
 
 ```yaml
 spec_versions:
-  公众号发布流程: 3
+  内容发布流程: 3
   图片治理: 2
 ```
 
@@ -234,7 +234,7 @@ spec_versions:
 
 ```bash
 cd /path/to/memento
-git pull origin master
+git pull origin main
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```
 
