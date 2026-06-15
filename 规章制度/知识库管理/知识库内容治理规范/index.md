@@ -9,7 +9,7 @@ provides: [知识库治理规范索引]
 status: active
 synopsis: "Memento 内容治理规范入口：汇总 00-11 子规范，并指向任务能力索引；定义 KB 存储边界、目录审计、frontmatter、生命周期、Agent 使用前检查和 inbox 消化。"
 version: 19
-changelog: "[Agent自修] 封板前标明 10 已废弃，12 为项目任务知识接入唯一权威"
+changelog: "[Agent自修] 封版前标明 10 已废弃，12 为项目任务知识接入唯一权威"
 versions:
   知识库治理规范索引: 15
 ---

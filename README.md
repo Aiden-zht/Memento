@@ -163,7 +163,7 @@ python3 scripts/audit-agent-usability.py
 
 ---
 
-## 当前封板能力
+## 当前封版能力
 
 Memento 当前已具备：冷启动入口、任务能力索引、任务类型索引、项目任务知识、inbox 消化、健康检查、格式 lint、Agent 可用性审计、provides 辅助定位、提交门禁、执行层对齐、公开版同步。
 
