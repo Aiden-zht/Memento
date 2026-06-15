@@ -6,8 +6,8 @@ category: "索引"
 load: index
 status: active
 synopsis: "Memento 知识库首页：AI-Native 知识底座 + Obsidian 即开即用，让任何 Agent 零记忆接入，自主读规范、建技能、修错误、验产出。"
-version: 18
-changelog: "[Agent自修] 新增计划章节，记录封版后 todo"
+version: 19
+changelog: "[sync] fix agent_mem residuals → Memento for public branding"
 ---
 
 # Memento
@@ -81,7 +81,7 @@ Memento 对人的使用量极小。你和它之间的交互大概只有这三种
 ```bash
 # 1. 克隆
 git clone https://gitee.com/Aiden-zht/Memento.git
-cd agent_mem
+cd Memento
 
 # 2. 安装 git hook（只做一次）
 bash scripts/install-hooks.sh
@@ -115,7 +115,7 @@ Agent（首次接入）：
 ## 目录结构
 
 ```
-agent_mem/
+Memento/
 ├── AGENTS.md              ← Agent 冷启动入口（人不需要看）
 ├── inbox/                 ← 投递口（扔文章进去就行）
 ├── 规章制度/              ← Agent 必须遵守的规则（治理、协作、运维）

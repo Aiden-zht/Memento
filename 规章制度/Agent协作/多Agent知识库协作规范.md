@@ -9,7 +9,7 @@ provides: [多Agent协作, git协作规范, 冲突处理, Agent标识]
 status: active
 synopsis: "多 Agent 共享 Memento 时的 git 协作规范：启动先 pull、修改前检查状态、提交标识、冲突处理、按需加载，避免并行覆盖。"
 version: 10
-changelog: "[Agent自修] 清理旧业务路径残留，改为新顶层目录架构"
+changelog: "[sync] fix agent_mem residuals → Memento for public branding"
 versions:
   多Agent协作: 8
   git协作规范: 4
@@ -40,7 +40,7 @@ versions:
 每个 Agent 在操作知识库前，必须执行三步：
 
 ```bash
-cd {{WORKSPACE}}/references/agent_mem
+cd {{WORKSPACE}}/Memento
 
 # Step 1: 拉取最新
 git pull origin main
