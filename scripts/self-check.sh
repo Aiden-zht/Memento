@@ -74,8 +74,9 @@ else
 fi
 
 # ── S5: Git 清洁度 ────────────────────────────────────────────────
-S5_UNCOMMITTED=$(git status --porcelain 2>/dev/null | wc -l)
-S5_UNPUSHED=$(git log origin/master..HEAD --oneline 2>/dev/null | wc -l || echo 0)
+S5_UNCOMMITTED=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
+UPSTREAM=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo origin/main)
+S5_UNPUSHED=$(git log "$UPSTREAM..HEAD" --oneline 2>/dev/null | wc -l | tr -d ' ' || echo 0)
 if [ "$S5_UNCOMMITTED" -eq 0 ] && [ "$S5_UNPUSHED" -eq 0 ]; then
     S5_MSG="PASS (clean)"
 elif [ "$S5_UNCOMMITTED" -gt 0 ] && [ "$S5_UNPUSHED" -eq 0 ]; then

@@ -8,10 +8,10 @@ audience: [all]
 provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 项目任务知识发现, 推送纪律, 用户产物优先, 任务模式判定, 使用前检查, 目录审计]
 status: active
 synopsis: "规定 Agent 读写 KB、按需检索、使用前检查、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 24
-changelog: "[agent] 同步公开版：脱敏私有内容、统一泛化术语"
+version: 25
+changelog: "[Agent自修] 再次瘦身：§7.6.3-7.6.8 执行层实现细节统一引用任务类型索引和只读验收协议，本文件仅保留红线"
 versions:
-  Agent行为约束: 16
+  Agent行为约束: 18
   读取优先级: 4
   写入检查: 3
   禁止行为: 6
@@ -47,7 +47,7 @@ versions:
 |------|----------|----------|----------|
 | 普通产出模式 | 用户要求生成、撰写、设计、创建、整理、输出或保存普通产物；这是默认模式 | 输出给用户，或写入用户明确指定路径 | 修改 Memento、移动到 inbox、固化为规范、`git add / commit / push` |
 | KB 使用模式 | 用户要求参考、遵守、依据、检查 Memento / KB 规则，但未要求修改 KB | 只读 Memento，按已有规则完成用户任务 | 新增、移动、修改、固化 KB 资产；`git add / commit / push` |
-| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 agent_mem、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
+| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 Memento、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
 
 BLOCKING：不得仅凭“知识库、规范、Agent、治理、Memento、SOUL、角色”等关键词进入 KB 维护模式；不得仅凭“可复用”“其他 Agent 可能有用”自动固化到 KB。
 
@@ -225,8 +225,8 @@ KB 只颁布规则，不管理执行层实现；但规则变更完成前，Agent
 
 | 类型 | 条件 | 示例 |
 |------|------|------|
-| 生产 skill | 依赖 KB 规范才能正确执行 | example-agent、validator-agent、kpi-agent |
-| cron job | 定时执行业务流程或规范校验 | 每日示例内容流水线 |
+| 生产 skill | 依赖 KB 规范才能正确执行 | <your-project>、validator-agent、kpi-agent |
+| cron job | 定时执行业务流程或规范校验 | 每日 Steam 折扣文章流水线 |
 | 本地脚本 | 代码中硬编码了 KB 规则、阈值、流程 | content_generator.py、validator 脚本 |
 
 不需要接入：纯工具封装、一次性临时脚本、不依赖 KB 规范的 API 调用。
@@ -236,7 +236,7 @@ KB 只颁布规则，不管理执行层实现；但规则变更完成前，Agent
 每个依赖 KB 的生产 skill 必须在 frontmatter 声明：
 
 ```yaml
-requires_provides: [内容发布流程, 质量检查, 素材治理]
+requires_provides: [公众号发布流程, 质量检查, 图片治理]
 kb_refresh_policy: runtime
 ```
 
@@ -250,90 +250,13 @@ kb_refresh_policy: runtime
 
 ```yaml
 spec_versions:
-  内容发布流程: 3
-  素材治理: 2
+  公众号发布流程: 3
+  图片治理: 2
 ```
 
-### 7.6.3 运行时对齐流程
+### 7.6.3–7.6.8 运行时对齐流程与执行细节
 
-依赖 KB 的 skill、cron、脚本在执行前必须执行：
-
-```bash
-cd /path/to/memento
-git pull origin main
-python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
-```
-
-如果 `provides-search.py` 未命中，必须用任务关键词 / 规则名全文搜索兜底，不能跳过 KB 规范。
-
-执行顺序：
-
-1. 读取本地实现的 `requires_provides`。
-2. `git pull` 获取最新 KB。
-3. 用 `provides-search.py --synopsis` 或全文搜索定位规范文件。
-4. 阅读 `synopsis`、`version`、`changelog` 和必要正文。
-5. 判断 KB 变更是否影响本地实现。
-6. 无影响：继续执行任务。
-7. 有影响：先更新 skill prompt、cron prompt 或脚本逻辑，验证通过后再执行任务。
-
-### 7.6.4 影响判断规则
-
-不允许因为 KB changelog 变化就盲改本地实现。必须按变更类型判断：
-
-| 变更类型 | 判断 | 本地动作 |
-|----------|------|----------|
-| 文字澄清 | 不改变流程、阈值、检查项 | 不改实现，继续执行 |
-| 新增参考资料 | 只增加背景说明或示例 | 不改实现，按需阅读 |
-| 阈值变化 | 分数、数量、时间、过滤条件变化 | 修改 skill prompt 或脚本常量 |
-| 流程变化 | 步骤新增、顺序调整、强制环节变化 | 修改 cron prompt、skill workflow、脚本编排 |
-| 检查项变化 | validator 规则新增/删除/改名 | 修改校验逻辑和测试样例 |
-| 接口变化 | API 参数、输出格式、发布流程变化 | 修改调用代码并跑 dry-run |
-| 废弃规则 | KB 标记 deprecated 或删除旧规范 | 移除本地旧逻辑 |
-
-### 7.6.5 需要 `spec_versions` 的场景
-
-默认不要求 `spec_versions`。只有以下情况需要：
-
-- cron job 长期无人值守，且 prompt/脚本无法每次完整读取 KB 正文。
-- 本地脚本硬编码了 KB 中的阈值、检查项、字段名、流程顺序。
-- 需要审计“某个实现上次按哪个 KB 版本验证过”。
-
-使用 `spec_versions` 时，规则是：验证通过后才推进版本；验证失败时不得更新版本记录。
-
-### 7.6.6 修改后的验证要求
-
-| 改动对象 | 最低验证 |
-|----------|----------|
-| skill | frontmatter 可解析；`requires_provides` 能命中 KB；确认执行前会加载最新 KB；主 `SKILL.md` 能直接暴露 BLOCKING 规则或明确指向必须读取的 reference |
-| cron prompt | 手动 `cronjob run` 或 dry-run；确认 Step 0 加载 KB；确认 deliver 目标正确 |
-| Python/JS 脚本 | 跑最小单元测试或 dry-run；不能只改不跑 |
-| KB 文件 | `bash scripts/lint-knowledge-base.sh`；commit + push |
-
-### 7.6.7 Skill 自更新闭环
-
-Agent 修改 skill 时，必须先判断新增内容属于“工具执行经验”还是“多 Agent 共用业务规则”。
-
-| 内容类型 | 存放位置 | 必须动作 |
-|----------|----------|----------|
-| 工具命令、参数、环境依赖、单工具坑点 | skill 主文档或 `专业知识/`、`素材库/` 或 `用户资料/` | 主 `SKILL.md` 必须能发现；必要时引用 reference |
-| 多 Agent 共用的业务流程、质量标准、发布要求、BLOCKING 规则 | KB 对应产物规范/项目知识/规章制度文件 | 先落 KB，再让 skill 通过 `requires_provides` / 明确引用加载 |
-| 临时会话经验、一次性调试状态 | 不入 KB，不入 skill | 当前会话消化；必要时转成通用规则后再入库 |
-
-强制规则：
-
-- 不得把业务规则只藏在 skill reference 里；如果另一个 Agent 也需要知道，必须同步进入 KB。
-- 如果 reference 中有“必须读”“BLOCKING”“禁止”等执行性要求，主 `SKILL.md` 必须显式提示，并说明何时读取该 reference。
-- 修改 skill 后必须按正常加载路径自测：只加载主 `SKILL.md` 时，Agent 是否能发现关键规则；需要 reference 时，主文档是否明确指向。
-- 依赖 KB 的 production skill 必须在 frontmatter 声明 `requires_provides` 和 `kb_refresh_policy: runtime`。
-
-### 7.6.8 场景差异
-
-| 场景 | 对齐方式 |
-|------|----------|
-| 对话 Agent | 每次 `git pull` 后读最新 KB；不维护长期版本表 |
-| Cron Agent | prompt Step 0 固定加载 KB；必要时记录 `spec_versions` |
-| 自建 skill | 声明 `requires_provides`；执行时动态加载 KB；只在硬编码实现中维护 `spec_versions` |
-| 本地脚本 | 能运行时读 KB 就读 KB；不能读 KB 时用旁路状态记录依赖和已验证版本 |
+运行时对齐的完整流程（git pull → provides-search → 判断变更影响 → 阈值/流程/检查项/接口/废弃规则分类处理）、`spec_versions` 使用条件、修改后验证要求、skill 自更新闭环和场景差异，以 [[规章制度/知识库管理/任务类型索引]] 和 [[规章制度/知识库管理/KB-执行层只读验收协议]] 为准。本节只保留核心红线：依赖 KB 的生产 skill 必须在 frontmatter 声明 `requires_provides` 和 `kb_refresh_policy: runtime`，不得把业务规则只藏在 skill reference。
 
 ## 7.7 KB-memory 仲裁
 
