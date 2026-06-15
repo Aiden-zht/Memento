@@ -8,8 +8,8 @@ audience: [all]
 provides: [Agent初始化, 规范加载, Agent引导, 本地实现同步]
 status: active
 synopsis: "新 Agent 启动时如何拉取 KB、读任务索引、按全文搜索+synopsis 加载规范，并处理 skill/cron 的 requires_provides。"
-version: 18
-changelog: "[agent] 开源版清理：统一 Memento/GitHub/main 表述并泛化示例业务"
+version: 19
+changelog: "[Agent自修] 公开版脱敏路径并同步任务能力入口"
 versions:
   Agent初始化: 14
   规范加载: 3
@@ -35,14 +35,17 @@ bash scripts/install-hooks.sh
 
 ```bash
 cd /path/to/memento
-git pull origin main
+git pull origin master
 ```
 
 详细操作见 [[规章制度/知识库管理/知识库内容治理规范/00-读取规范]]。
 
-## 第二步：读任务类型索引
+## 第二步：读任务能力索引和任务类型索引
 
-先读：[[规章制度/知识库管理/任务类型索引]]
+先读：
+
+1. [[规章制度/知识库管理/任务能力索引]]
+2. [[规章制度/知识库管理/任务类型索引]]
 
 目的：
 - 判断当前任务属于哪一类
@@ -54,7 +57,7 @@ git pull origin main
 推荐路径：
 
 ```text
-任务类型索引 → 关键词/核心规则 → 全文搜索 → 读候选 frontmatter → synopsis 筛选 → 读取正文
+任务能力索引 → 任务类型索引 → 关键词/核心规则 → 全文搜索 → 读候选 frontmatter → synopsis 筛选 → 读取正文
 ```
 
 工具选择：
@@ -73,7 +76,7 @@ git pull origin main
 当加载一个 skill 后，检查其 frontmatter：
 
 ```yaml
-requires_provides: [内容发布流程, 质量检查, 图片治理]
+requires_provides: [内容平台发布流程, 质量检查, 图片治理]
 kb_refresh_policy: runtime
 ```
 
@@ -107,7 +110,7 @@ kb_refresh_policy: runtime
 
 ```bash
 cd /path/to/memento
-git pull origin main
+git pull origin master
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```
 
@@ -133,7 +136,7 @@ python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 
 1. [[规章制度/Agent协作/多Agent知识库协作规范]] — git 协作细节
 2. [[规章制度/知识库管理/知识库内容治理规范/07-Agent行为约束]] — 行为规则和运行时规范对齐契约
-3. 对应项目业务包 `specs/index.md` 声明的 workflow 与质量规范
+3. 对应项目项目任务知识 `项目知识/<项目>/index.md` 声明的 workflow 与质量规范
 
 ---
 

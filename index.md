@@ -1,15 +1,15 @@
 ---
 title: "Memento 索引"
-date: "2026-06-15"
-tags: [索引, 知识库, Memento]
-category: "索引"
-load: index
-audience: [all]
-provides: [知识库索引, 导航目录]
+type: index
 status: active
-synopsis: "Memento 总入口：指向 AGENTS、Quickstart、FAQ、贡献说明、公开示例、任务索引、知识库治理和规章制度。Agent 冷启动后的导航页。"
+load: default
+source: agent_synthesis
+confidence: high
+last_reviewed: "2026-06-15"
+synopsis: "Memento 总入口：按 Agent 使用方式导航规章制度、产物规范、专业知识、素材库、项目知识、用户资料和 inbox。"
+provides: [知识库索引, 导航目录]
 version: 12
-changelog: "[agent] 开源版清理：统一公开入口并移除私有知识域索引"
+changelog: "[Agent自修] 更新为全目录可审计顶层架构，加入新顶层目录入口与最小维护规则"
 versions:
   知识库索引: 8
   导航目录: 3
@@ -17,41 +17,31 @@ versions:
 
 # Memento 索引
 
-> Git: https://github.com/Aiden-zht/Memento.git
-> **冷启动入口**：[[AGENTS]]
-> **快速开始**：[[QUICKSTART]]
-> **常见问题**：[[FAQ]]
-> **贡献说明**：[[CONTRIBUTING]]
-> **公开示例**：[[examples/index]]
+> Git: https://gitee.com/aidenzht/agent_mem.git
+> 冷启动入口：[[AGENTS]]
+> 内容治理：[[规章制度/知识库管理/知识库内容治理规范/index]]
+
+## 顶层目录
+
+| 目录 | 用途 | 加载 |
+|------|------|------|
+| [[规章制度/index]] | KB 和 Agent 自身怎么运行 | 按任务加载 |
+| [[产物规范/index]] | 各类产物怎么做、怎么验收 | 生成/验收对应产物时加载 |
+| [[专业知识/index]] | 领域/技术/行业判断依据 | 按需加载 |
+| [[素材库/index]] | 案例、故事、金句、片段、失败案例 | 按需加载 |
+| [[项目知识/index]] | 具体项目/repo/系统长期事实 | 相关项目任务加载 |
+| [[用户资料/index]] | 用户投喂并消化后的来源资料 | 按需引用 |
+| `inbox/` | 原始材料投递口 | 仅消化任务读取 |
+
+`scripts/` 和 `_templates/` 是维护设施，不是知识权威源。
+
+## 使用规则
+
+- 先判定任务模式，再按任务类型索引和全文搜索加载相关文件。
+- 使用目录/文件前检查 `status`、`load`、`source`、`confidence`、`load_when`。
+- 没有合格 `index.md` 的目录，不视为正式知识源。
+- KB 改动必须 lint、commit、push。
 
 ---
 
-## 入口
-
-| 文件 | 用途 |
-|------|------|
-| [[AGENTS]] | Agent 冷启动入口 |
-| [[README]] | 项目介绍 |
-| [[QUICKSTART]] | 人和 Agent 的最短上手流程 |
-- [[FAQ]] — 面向使用者的常见问题
-| [[CONTRIBUTING]] | 贡献规则与 PR 前检查 |
-| [[examples/index]] | 公开脱敏示例 |
-
-## 规章制度
-
-| 目录 | 用途 |
-|------|------|
-| [[规章制度/index]] | 规章制度总索引 |
-| [[规章制度/知识库管理/index]] | Memento 自身治理 |
-| [[规章制度/知识库管理/任务类型索引]] | 任务类型到规范的路由入口 |
-| [[规章制度/知识库管理/知识库内容治理规范/index]] | 内容边界、文件规范、生命周期、业务包设计 |
-| [[规章制度/Agent协作/index]] | 多 Agent git 协作规范 |
-| [[规章制度/Cron流水线运维规范/index]] | 定时流水线通用运维规范 |
-
-## 业务包
-
-Memento 核心仓库不保存具体业务规则。具体业务在项目自己的 `specs/` 中维护。
-
-业务包标准见：[[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]]
-
-最小示例见：[[examples/minimal-business-specs/index]]
+相关：[[规章制度/知识库管理/知识库内容治理规范/04-目录分类]] · [[规章制度/知识库管理/知识库内容治理规范/05-文件规范]] · [[规章制度/知识库管理/知识库内容治理规范/07-Agent行为约束]]

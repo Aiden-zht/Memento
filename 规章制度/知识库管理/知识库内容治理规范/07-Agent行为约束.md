@@ -1,27 +1,29 @@
 ---
 title: "Agent 行为约束"
-date: "2026-06-14"
+date: "2026-06-15"
 tags: [知识库, 治理, 规范, Agent]
 category: "规章制度/知识库管理/知识库内容治理规范"
 load: on-demand
 audience: [all]
-provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 业务包发现, 推送纪律, 用户产物优先, 任务模式判定]
+provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 项目任务知识发现, 推送纪律, 用户产物优先, 任务模式判定, 使用前检查, 目录审计]
 status: active
-synopsis: "规定 Agent 读写 KB、按需检索、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 17
-changelog: "[agent] 开源版清理：统一 Memento/GitHub/main 表述并泛化示例业务"
+synopsis: "规定 Agent 读写 KB、按需检索、使用前检查、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
+version: 19
+changelog: "[Agent自修] 圆桌审计后统一七类正式目录命名，并补规则变更时执行层最小只读验收"
 versions:
-  Agent行为约束: 13
-  读取优先级: 3
+  Agent行为约束: 14
+  读取优先级: 4
   写入检查: 3
   禁止行为: 6
-  内容寻址: 4
+  内容寻址: 5
   规范优化反馈: 4
   职责边界: 2
   KB-memory仲裁: 1
   本地实现同步: 3
   用户产物优先: 1
   任务模式判定: 1
+  使用前检查: 1
+  目录审计: 1
 ---
 
 # Agent 行为约束
@@ -45,7 +47,7 @@ versions:
 |------|----------|----------|----------|
 | 普通产出模式 | 用户要求生成、撰写、设计、创建、整理、输出或保存普通产物；这是默认模式 | 输出给用户，或写入用户明确指定路径 | 修改 Memento、移动到 inbox、固化为规范、`git add / commit / push` |
 | KB 使用模式 | 用户要求参考、遵守、依据、检查 Memento / KB 规则，但未要求修改 KB | 只读 Memento，按已有规则完成用户任务 | 新增、移动、修改、固化 KB 资产；`git add / commit / push` |
-| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 Memento、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
+| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 agent_mem、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
 
 BLOCKING：不得仅凭“知识库、规范、Agent、治理、Memento、SOUL、角色”等关键词进入 KB 维护模式；不得仅凭“可复用”“其他 Agent 可能有用”自动固化到 KB。
 
@@ -93,11 +95,12 @@ Agent 读取知识库时，按以下优先级：
 
 | 优先级 | 类型 | 说明 |
 |--------|------|------|
-| 1 | 规范文档 | 必须遵守 |
-| 2 | 治理标准 | 知识库使用规则 |
-| 3 | 业务流程 | 特定任务的流程 |
-| 4 | 技术参考 | 可查阅的资料 |
-| 5 | 示例库 | 学习样本 |
+| 1 | `规章制度/` | 必须遵守；KB 和 Agent 自身运行规则 |
+| 2 | `产物规范/` | 生成或验收对应产物时必须遵守 |
+| 3 | `项目知识/` 中的项目契约 | 仅在对应项目内有约束力 |
+| 4 | `专业知识/` | 判断参考，不是规则源 |
+| 5 | `素材库/`、`用户资料/` | 表达/案例/来源参考，不是事实或规则权威 |
+| 6 | `inbox/` | 仅消化任务读取，不作为正式知识 |
 
 ### 内容寻址：如何精准加载
 
@@ -107,11 +110,23 @@ Agent 读取知识库时，按以下优先级：
 2. **发现候选**：用全文搜索定位候选文件。
    - Hermes Agent：`search_files(pattern="关键词", target="content")`
    - Shell：`rg "关键词" --include="*.md" -l`
-3. **筛选候选**：读候选文件 frontmatter，优先看 `synopsis`、`load`、`status`。
-4. **辅助确认**：`provides` 用于确认语义标签和 cron 固定依赖，但不是唯一入口。
-5. **跟随链接**：业务流程文件中的 wiki-link 是依赖链，必要时继续加载。
+3. **筛选候选**：读候选文件 frontmatter，优先看 `type`、`status`、`load`、`synopsis`、`source`、`confidence`、`load_when`。
+4. **使用前检查**：确认目录 index 和文件 frontmatter 允许在当前任务使用。
+5. **辅助确认**：`provides/requires` 用于确认语义标签和执行层依赖，但不是唯一入口。
+6. **跟随链接**：业务流程文件中的 wiki-link 是依赖链，必要时继续加载。
 
-> `audience` 字段仅供人类维护者参考。Agent 按任务需求加载，不按 audience 过滤。
+### 7.2.1 使用前检查
+
+Agent 使用任何 KB 目录或文件前，必须做最小检查：
+
+- 目录：正式知识目录必须有 `index.md`，且写明定位、收录范围、禁止内容、加载条件、维护方式、审计规则、清理规则。
+- 状态：`status: active` 才能直接作为生产依据；`draft/stale/deprecated/archived` 只能参考或需复核。
+- 加载：`load` 必须匹配当前任务；`conditional/manual` 必须检查 `load_when`。
+- 来源：专业知识、素材库、项目知识、用户资料必须可追溯 `source`。
+- 置信度：事实或判断类内容必须检查 `confidence`；低置信度不得写成确定结论。
+- 闭环：被 skill、cron、script、AGENTS.md 或任务入口依赖的文件，必须检查 `provides/requires` 和运行时加载机制。
+
+无合格 index 的目录、不满足加载条件的文件、无来源的判断类内容，不得作为正式依据。
 
 ## 7.3 禁止行为
 
@@ -126,8 +141,8 @@ Agent 读取知识库时，按以下优先级：
 | 只靠文件名猜规则 | 容易漏读真正规范；必须读任务索引和候选文件 synopsis |
 | 只靠 provides 搜索且搜不到就放弃 | provides 是辅助标签；搜不到时必须用全文搜索兜底 |
 | 用 KB 机制替代 Agent 原生搜索/语义理解/git history | 属于过度设计；KB 只补 Agent 短板，不重造原生能力 |
-| 忽略项目 specs/ 业务包 | 执行业务任务前必须检查当前项目是否有 `specs/index.md`，按 [[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]] 的发现机制加载 |
-| **业务包/规范改动后不 push** | **任何对 KB 业务包（`specs/`）或规范文件的修改，必须在声明完成前执行 `git add -A → commit → push`。遗漏推送视为违规** | 本次事故：修改 `content_generator.py` 逻辑后未推送 KB，导致规范与实现脱节 |
+| 忽略项目 项目知识/ 项目任务知识 | 执行业务任务前必须检查当前项目是否有 `项目知识/<项目>/index.md`，按 [[规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计]] 的发现机制加载 |
+| **项目任务知识/规范改动后不 push** | **任何对 KB 项目任务知识（`项目知识/`）或规范文件的修改，必须在声明完成前执行 `git add -A → commit → push`。遗漏推送视为违规** | 本次事故：修改 `content_generator.py` 逻辑后未推送 KB，导致规范与实现脱节 |
 
 ## 7.4 规范优化反馈
 
@@ -172,9 +187,9 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 | Agent 专属配置 | 单 Agent 的 prompt 片段、shell 别名 | Agent 工作区或 dotfiles |
 | 临时分析 | 一次性调研、调试记录 | 会话内消化，不入库 |
 
-例外：项目 `specs/` 业务包中的流程、模板、质量标准，在用户明确创建业务包或固化业务规则时，属于业务知识，应进入对应业务包，不进入 Memento 核心 KB。
+例外：项目 `项目知识/` 中的流程、模板、质量标准，在用户明确创建项目知识或固化项目长期规则时，属于项目知识，应进入对应项目目录，不进入 Memento 核心规章制度。
 
-判断标准：只有“多 Agent 长期共享 + 用户明确要求固化”的内容才进入 KB 或业务包；如果只是本次任务产物、候选提示词、SOUL、角色草稿、一次性方案，默认按用户产物交付，不因“其他 Agent 可能有用”自动入库。
+判断标准：只有“多 Agent 长期共享 + 用户明确要求固化”的内容才进入 KB 或项目知识；如果只是本次任务产物、候选提示词、SOUL、角色草稿、一次性方案，默认按用户产物交付，不因“其他 Agent 可能有用”自动入库。
 
 ## 7.6 本地实现运行时规范对齐契约
 
@@ -186,6 +201,22 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 - `requires_provides` 是依赖声明，必须保留。
 - `spec_versions` 是可选状态，不是默认要求；只有硬编码脚本、长期 cron 状态追踪、无法运行时加载 KB 的实现才需要。
 - 默认同步方式不是"版本记账"，而是"运行时读取最新 KB + Agent 判断是否影响实现"。
+- 闭环只在规则、目录结构、任务入口、Agent 行为、frontmatter/provides/requires、`kb_refresh_policy`、产物规范、项目契约，或被 skill/cron/script/AGENTS.md/任务入口依赖时触发；普通素材、用户资料、参考知识不强制声明 `requires_provides`。
+
+### 7.6.0 规则变更后的最小只读验收
+
+KB 仍然只颁布规则，不管理执行层实现；但规则变更完成前，Agent 必须做最小只读验收，防止旧规则仍在生产执行层运行。
+
+触发条件：修改 KB 规则、目录结构、任务入口、Agent 行为、frontmatter/provides/requires、`kb_refresh_policy`、产物规范或项目契约。
+
+检查范围：
+
+1. AGENTS.md、README、任务能力索引、任务类型索引、强制规则索引是否仍引用旧入口、旧目录名或旧规则口径。
+2. 依赖 KB 的 skill frontmatter 是否声明 `requires_provides` 与 `kb_refresh_policy: runtime`。
+3. cron prompt 是否有 Step 0 加载 KB，且未硬编码旧路径或旧目录名。
+4. 本地 scripts / role SOUL / prompt 中是否存在会影响执行的旧词、旧路径、旧规则。
+
+验收输出必须说明：已检查范围、跳过范围、不可访问范围、未发现依赖、旧词/旧路径命中。不得把具体 skill、cron、script、prompt 的私有内容写进 KB 当法律；只记录通用检查要求。
 
 **闭环保证：任何自建 skill，只需在 frontmatter 声明两行——`requires_provides` + `kb_refresh_policy: runtime`。不需要硬编码 KB 文件路径、不需要写桥接代码、不需要手动同步。KB 规范改了内容（阈值、流程、检查项），下次执行自动读最新版。KB 改了目录结构，provides-search 搜索定位，不受路径变化影响。**
 
@@ -193,14 +224,14 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 
 必须执行运行时规范对齐的本地实现：
 
-> **业务包**：除 skill/cron/脚本外，项目 `specs/` 业务包的 `index.md` 也必须声明 `depends_on`（等价于 `requires_provides`）和 `kb_refresh_policy: runtime`，执行前读取最新 KB 并判断变更影响。详见 [[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]]。
+> **项目任务知识**：除 skill/cron/脚本外，项目 `项目知识/` 项目任务知识的 `index.md` 也必须声明 `depends_on`（等价于 `requires_provides`）和 `kb_refresh_policy: runtime`，执行前读取最新 KB 并判断变更影响。详见 [[规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计]]。
 
 
 
 | 类型 | 条件 | 示例 |
 |------|------|------|
 | 生产 skill | 依赖 KB 规范才能正确执行 | example-agent、validator-agent、kpi-agent |
-| cron job | 定时执行业务流程或规范校验 | 每日 示例业务文章流水线 |
+| cron job | 定时执行业务流程或规范校验 | 每日示例内容流水线 |
 | 本地脚本 | 代码中硬编码了 KB 规则、阈值、流程 | content_generator.py、validator 脚本 |
 
 不需要接入：纯工具封装、一次性临时脚本、不依赖 KB 规范的 API 调用。
@@ -210,7 +241,7 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 每个依赖 KB 的生产 skill 必须在 frontmatter 声明：
 
 ```yaml
-requires_provides: [内容发布流程, 质量检查, 图片治理]
+requires_provides: [内容平台发布流程, 质量检查, 图片治理]
 kb_refresh_policy: runtime
 ```
 
@@ -224,7 +255,7 @@ kb_refresh_policy: runtime
 
 ```yaml
 spec_versions:
-  内容发布流程: 3
+  内容平台发布流程: 3
   图片治理: 2
 ```
 
@@ -234,7 +265,7 @@ spec_versions:
 
 ```bash
 cd /path/to/memento
-git pull origin main
+git pull origin master
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```
 
@@ -289,8 +320,8 @@ Agent 修改 skill 时，必须先判断新增内容属于“工具执行经验�
 
 | 内容类型 | 存放位置 | 必须动作 |
 |----------|----------|----------|
-| 工具命令、参数、环境依赖、单工具坑点 | skill 主文档或 `references/` | 主 `SKILL.md` 必须能发现；必要时引用 reference |
-| 多 Agent 共用的业务流程、质量标准、发布要求、BLOCKING 规则 | KB 对应业务/规章制度文件 | 先落 KB，再让 skill 通过 `requires_provides` / 明确引用加载 |
+| 工具命令、参数、环境依赖、单工具坑点 | skill 主文档或 `专业知识/`、`素材库/` 或 `用户资料/` | 主 `SKILL.md` 必须能发现；必要时引用 reference |
+| 多 Agent 共用的业务流程、质量标准、发布要求、BLOCKING 规则 | KB 对应产物规范/项目知识/规章制度文件 | 先落 KB，再让 skill 通过 `requires_provides` / 明确引用加载 |
 | 临时会话经验、一次性调试状态 | 不入 KB，不入 skill | 当前会话消化；必要时转成通用规则后再入库 |
 
 强制规则：
