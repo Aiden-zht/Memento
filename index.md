@@ -33,7 +33,7 @@ versions:
 | [[AGENTS]] | Agent 冷启动入口 |
 | [[README]] | 项目介绍 |
 | [[QUICKSTART]] | 人和 Agent 的最短上手流程 |
-| [[FAQ]] | 常见问题与故障处理 |
+- [[FAQ]] — 面向使用者的常见问题
 | [[CONTRIBUTING]] | 贡献规则与 PR 前检查 |
 | [[examples/index]] | 公开脱敏示例 |
 
@@ -55,15 +55,3 @@ Memento 核心仓库不保存具体业务规则。具体业务在项目自己的
 业务包标准见：[[规章制度/知识库管理/知识库内容治理规范/12-业务包通用设计]]
 
 最小示例见：[[examples/minimal-business-specs/index]]
-
-## 维护命令
-
-```bash
-git pull origin main
-bash scripts/install-hooks.sh
-bash scripts/lint-knowledge-base.sh
-python3 scripts/audit-agent-usability.py
-bash scripts/self-check.sh
-```
-
-修改后按贡献说明提交 PR 或推送到自己的 fork。

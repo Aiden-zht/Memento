@@ -6,13 +6,13 @@ category: "examples"
 load: on-demand
 status: active
 synopsis: "公开版 Agent 首次运行示例：展示新 Agent clone Memento 后如何读入口、跑检查、定位规范和加载最小业务包。"
-version: 1
-changelog: "initial public example"
+version: 2
+changelog: "[agent] 移除面向人的手动提示，改为 Agent 可执行的验收命令格式"
 ---
 
 # Agent 首次运行示例
 
-把下面这段发给一个新 Agent：
+发给一个新 Agent 的验收任务：
 
 ```text
 你只知道一个知识库路径：/path/to/memento。

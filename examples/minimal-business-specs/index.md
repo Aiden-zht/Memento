@@ -6,8 +6,8 @@ category: "specs"
 load: index
 status: active
 synopsis: "最小业务包入口示例：声明业务范围、依赖的 Memento 通用规范、运行时刷新策略和本业务文件结构。"
-version: 1
-changelog: "initial public example"
+version: 2
+changelog: "[agent] 移除面向人的脚本命令块，简化为 Agent 操作描述"
 depends_on: [业务包通用设计, Agent行为约束, 文件规范]
 kb_refresh_policy: runtime
 business_scope: "示例内容处理业务，仅用于展示 specs 结构。"
@@ -33,15 +33,7 @@ business_scope: "示例内容处理业务，仅用于展示 specs 结构。"
 - `Agent行为约束`
 - `文件规范`
 
-建议命令：
-
-```bash
-cd /path/to/memento
-git pull origin main
-python3 scripts/provides-search.py --synopsis 业务包通用设计 Agent行为约束 文件规范
-```
-
-如果标签未命中，用全文搜索兜底。
+执行时用 provides-search 定位这些规范，标签未命中时全文搜索兜底。
 
 ## 本业务文件结构
 

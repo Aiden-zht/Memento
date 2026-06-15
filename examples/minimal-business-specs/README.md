@@ -6,8 +6,8 @@ category: "examples"
 load: template
 status: active
 synopsis: "公开版最小业务包示例：展示项目 specs/index.md 如何声明业务边界、依赖的 Memento 规范、运行时刷新策略和验证方式。"
-version: 1
-changelog: "initial public example"
+version: 2
+changelog: "[agent] 移除面向人的手动复制和脚本命令，改为纯 Agent 操作方式"
 ---
 
 # 最小业务包示例
@@ -28,15 +28,20 @@ your-project/
 
 ## 使用方式
 
-1. 复制本目录到你的项目：
+1. 告诉 Agent：
 
-```bash
-cp -R examples/minimal-business-specs /path/to/your-project/specs
+```text
+按 Memento 业务包标准把我的项目接进来，业务规则参考 examples/minimal-business-specs。
 ```
 
-2. 按你的业务改写 `specs/index.md`。
-3. 让 Agent 执行业务任务前先读项目的 `specs/index.md`。
-4. Agent 根据 `depends_on` 回到 Memento 加载通用规范。
+或：
+
+```text
+帮我创建一个新的业务包，类型参考 examples/minimal-business-specs。
+```
+
+2. Agent 会根据 `_templates/business-package/` 创建 `specs/` 结构，并按你的业务改写 `specs/index.md`。
+3. 业务包创建后，Agent 自动通过 `depends_on` 回到 Memento 加载通用规范。
 
 ## 关键字段
 
