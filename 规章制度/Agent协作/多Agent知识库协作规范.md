@@ -9,7 +9,7 @@ provides: [多Agent协作, git协作规范, 冲突处理, Agent标识]
 status: active
 synopsis: "多 Agent 共享 Memento 时的 git 协作规范：启动先 pull、修改前检查状态、提交标识、冲突处理、按需加载，避免并行覆盖。"
 version: 11
-changelog: "[agent] sync from private d53068f: desensitize agent_mem→memento、origin/master→origin/main、gitee→github、私有项目路径→<your-project>；changelog 不变更业务语义"
+changelog: "[agent] sync from private d53068f: desensitize memento framework sync、default branch→main、private remote→GitHub、私有项目路径→<your-project>；changelog 不变更业务语义"
 versions:
   多Agent协作: 8
   git协作规范: 4
