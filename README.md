@@ -46,7 +46,7 @@ Memento 不是文档仓库。它是一个**自描述、自修复、自验收**�
 ## 架构
 
 ```
-agent_mem/
+memento/
 ├── AGENTS.md                          ← Agent 冷启动入口
 ├── inbox/                             ← 人的投递口（扔文章就行）
 ├── 规章制度/                          ← Agent 必须遵守的规则
@@ -109,7 +109,7 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 ### 给人
 
 ```bash
-# 1. git clone https://gitee.com/aidenzht/agent_mem.git
+# 1. git clone https://gitee.com/Aiden-zht/Memento.git
 # 2. 把文章扔进 inbox/
 # 3. 对 Agent 说：消化 inbox
 # 4. 通过对话建立规范，Agent 自己整理
@@ -118,7 +118,7 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 ### 给 Agent
 
 ```bash
-cd /path/to/agent_mem
+cd /path/to/memento
 git pull origin master
 ```
 

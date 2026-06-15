@@ -8,8 +8,8 @@ audience: [all]
 provides: [多Agent协作, git协作规范, 冲突处理, Agent标识]
 status: active
 synopsis: "多 Agent 共享 Memento 时的 git 协作规范：启动先 pull、修改前检查状态、提交标识、冲突处理、按需加载，避免并行覆盖。"
-version: 10
-changelog: "[Agent自修] 清理旧业务路径残留，改为新顶层目录架构"
+version: 11
+changelog: "[agent] sync from private d53068f: desensitize agent_mem→memento、origin/master→origin/main、gitee→github、私有项目路径→<your-project>；changelog 不变更业务语义"
 versions:
   多Agent协作: 8
   git协作规范: 4
@@ -40,7 +40,7 @@ versions:
 每个 Agent 在操作知识库前，必须执行三步：
 
 ```bash
-cd {{WORKSPACE}}/references/agent_mem
+cd {{WORKSPACE}}/references/memento
 
 # Step 1: 拉取最新
 git pull origin main
@@ -163,7 +163,7 @@ git push origin master
 
 Agent 调用方式：
 ```bash
-bash {{WORKSPACE}}/references/agent_mem/scripts/pull-and-check.sh
+bash {{WORKSPACE}}/references/memento/scripts/pull-and-check.sh
 ```
 
 输出示例：
