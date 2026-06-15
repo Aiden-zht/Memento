@@ -6,8 +6,8 @@ category: "索引"
 load: index
 status: active
 synopsis: "Memento 知识库首页：AI-Native 知识底座 + Obsidian 即开即用，让任何 Agent 零记忆接入，自主读规范、建技能、修错误、验产出。"
-version: 10
-changelog: "[Agent自修] 圆桌审计后降级 README 为人类入口，补齐七类正式目录与 Agent 权威链"
+version: 14
+changelog: "[Agent自修] 修复架构概览图：改为 TD 布局，KB 子模块方向 LR，补虚线搜索定位关系"
 ---
 
 # Memento
@@ -18,14 +18,12 @@ changelog: "[Agent自修] 圆桌审计后降级 README 为人类入口，补齐�
 
 ## 这是什么
 
-Memento 不是文档仓库。它是一个**自描述、自修复、自验收**的 AI 知识底座。
-
-把文章扔进来，Agent 先评审再消化归类。改了规范，依赖它的技能自动感知更新。新 Agent 拿到仓库路径，不需要任何上下文就能跑通完整任务。
+Memento 不是文档仓库。它是一个**自描述、自修复、自验收**的 AI 知识底座设计方向——把材料扔进来，Agent 按规范消化归类；改了规范，依赖它的技能通过 `requires_provides` + `kb_refresh_policy: runtime` 运行时读取最新版；新 Agent 拿到仓库路径，从 `AGENTS.md` 开始按索引执行。
 
 ```
 人 → inbox/（扔文章）        Agent → 评审 → 消化 → 归类 → 入索引
-人 → 对话建立规范             Agent → 写 frontmatter → lint → commit
-人 → 改规范                   Agent → 感知变更 → 自修 skill
+人 → 对话建立规范             Agent → 写 frontmatter → lint
+人 → 改规范                   Agent → 运行时加载最新 KB → 按新规则执行
 新 Agent → git clone          Agent → AGENTS.md → 索引 → 规范 → 执行
 ```
 
@@ -37,7 +35,7 @@ Memento 不是文档仓库。它是一个**自描述、自修复、自验收**�
 
 **不会阳奉阴违。** 跟 AI 说"发布前必须校验"——它真的会校验。BLOCKING 规则写在入口，pre-commit hook 拦在提交前，self-check 每次 commit 跑一遍。不是建议，是硬约束。
 
-**换 Agent 不换脑子。** 换新模型、换新平台、换新机器——Agent 拿到这个仓库就能干活。技能自修复、规范自感知，不需要重新调教。
+**换 Agent 不换脑子。** 换新模型、换新平台、换新机器——Agent 拿到这个仓库就能按 `AGENTS.md` → 索引 → 规范 开始干活。技能通过运行时加载保持与 KB 同步，不需要重新调教。
 
 **业务解耦。** Memento 不存代码、运行状态和产物；长期项目规则和事实默认放在本仓库 `项目知识/<项目>/`，由 Memento 定义结构，Agent 自动识别。
 
@@ -46,7 +44,7 @@ Memento 不是文档仓库。它是一个**自描述、自修复、自验收**�
 ## 架构
 
 ```
-memento/
+agent_mem/
 ├── AGENTS.md                          ← Agent 冷启动入口
 ├── inbox/                             ← 人的投递口（扔文章就行）
 ├── 规章制度/                          ← Agent 必须遵守的规则
@@ -71,30 +69,70 @@ memento/
 
 **业务解耦**：长期项目规则和事实由本仓库 `项目知识/<项目>/` 维护，通过 [[规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计]] 的标准结构接入；外部项目目录只存实现、状态和产物。
 
+### 架构概览
+
+```mermaid
+flowchart TD
+    A[AGENTS.md] --> B[任务能力索引]
+    B --> C[任务类型索引]
+
+    C --> D{三种模式}
+    D -->|普通产出| E[不改 KB]
+    D -->|KB 使用| F[只读]
+    D -->|KB 维护| G[读写 + 验证]
+
+    subgraph Core [Memento 知识库]
+        direction LR
+        H[规章制度]
+        I[产物规范]
+        J[专业知识]
+        K[素材库]
+        L[项目知识]
+        M[用户资料]
+        N[inbox]
+    end
+
+    F -. 搜索 / synopsis 定位 .-> Core
+    G --> O[lint] --> P[self-check] --> Q[git push]
+    G -. 搜索 / synopsis 定位 .-> Core
+
+    classDef entry fill:#1f2937,stroke:#93c5fd,color:#fff;
+    classDef core fill:#064e3b,stroke:#6ee7b7,color:#fff;
+    classDef mode fill:#7c2d12,stroke:#fdba74,color:#fff;
+    classDef tool fill:#312e81,stroke:#c4b5fd,color:#fff;
+
+    class A,B,C entry;
+    class Core,H,I,J,K,L,M,N core;
+    class D,E,F,G mode;
+    class O,P,Q tool;
+```
+
+> 入口链：`AGENTS.md` → 任务能力索引 → 任务类型索引 → 三种模式 → 搜索/检查 → KB 目录。
+
 ---
 
 ## 特性
 
 ### 🧭 零记忆接入
-新 Agent 只知道仓库路径，就能通过 `AGENTS.md` → `任务类型索引` → 规范 完成冷启动。实测：零上下文 Agent 跑通完整业务流水线。
+新 Agent 只知道仓库路径，就能通过 `AGENTS.md` → `任务类型索引` → 规范 完成冷启动。
 
 ### 📦 项目任务知识接入设计
 Memento 定义项目任务知识标准结构（`项目知识/<项目>/`）。用户说"新建写作业务"，Agent 读模板 → 在本仓库创建项目知识 → 对话逐步完善规则。见 `12-项目任务知识接入设计`。
 
 ### 🔧 技能自举
-KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时自动 `git pull` → `provides-search` → 读最新规范，不需要人手动同步。
+KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时 `git pull` → `provides-search` → 读最新规范，不需要人手动同步。
 
 ### 🩹 技能自修复
-规范改了，Agent 能自主发现技能中的过时引用并修正。已通过验收测试验证。
+规范改了，Agent 按运行时加载机制读最新版后执行；如本地实现仍硬编码旧规则，按 [[规章制度/知识库管理/KB-执行层只读验收协议]] 进行只读验收。
 
 ### 🛡️ 提交即检查
-每次 `git commit` 自动触发 lint + self-check（8 维度：违禁文件、废弃引用、索引完整性、目录深度、入口断链……）。违规直接拦截。
+安装 hook 后，每次 `git commit` 自动触发 lint + self-check（8 维度：违禁文件、废弃引用、索引完整性、目录深度、入口断链……）。违规直接拦截。
 
 ### 📦 零门槛使用
 人不需要懂目录结构。文章扔进 `inbox/`，对 Agent 说"消化 inbox"。Agent 先评审价值和质量，再按需补格式、入索引。
 
 ### ✅ 内置验收
-`09-新Agent初始化` 包含通用验收测试，测冷启动、工具发现、技能自举、自修复、多 Agent 隔离。
+`09-新Agent初始化` 包含通用验收测试，测冷启动、工具发现、技能自举、多 Agent 隔离。
 
 ### 🔄 回滚 SOP
 改错了？`06-文件生命周期` §6.7 有完整回滚流程：时机判断 → `git revert` → 连带检查（入链/索引/provides/下游通知）。
@@ -109,7 +147,7 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 ### 给人
 
 ```bash
-# 1. git clone https://github.com/Aiden-zht/Memento.git
+# 1. git clone https://github.com/your-username/memento.git
 # 2. 把文章扔进 inbox/
 # 3. 对 Agent 说：消化 inbox
 # 4. 通过对话建立规范，Agent 自己整理
@@ -118,7 +156,7 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 ### 给 Agent
 
 ```bash
-cd /path/to/Memento
+cd /path/to/agent_mem
 git pull origin main
 ```
 
@@ -163,11 +201,11 @@ python3 scripts/audit-agent-usability.py
 
 ---
 
-## 当前封版能力
+## 当前能力
 
-Memento 当前已具备：冷启动入口、任务能力索引、任务类型索引、项目任务知识、inbox 消化、健康检查、格式 lint、Agent 可用性审计、provides 辅助定位、提交门禁、执行层对齐、公开版同步。
+Memento 已建立：冷启动入口 `AGENTS.md`、任务能力索引、任务类型索引（唯一 BLOCKING 入口）、项目任务知识接入设计、inbox 消化流程、健康检查工具链、provides 辅助定位、git 副作用门禁。
 
-下一步优先补：普通用户入口体验、执行层对齐自动报告、公开版最小项目示例、零记忆 Agent L3 验收。
+下一步优先补：普通用户入口体验、执行层只读验收自动报告、公开版最小项目示例、零记忆 Agent L3 验收。
 
 设计宗旨：KB 只颁布规则，不执行规则；Agent 按任务入口和全文搜索按需读取，工具只是实现手段；不 all-load、不建重 manifest、不把私有业务内容混入通用框架。
 

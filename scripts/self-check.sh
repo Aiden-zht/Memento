@@ -75,7 +75,7 @@ fi
 
 # ── S5: Git 清洁度 ────────────────────────────────────────────────
 S5_UNCOMMITTED=$(git status --porcelain 2>/dev/null | wc -l)
-S5_UNPUSHED=$(git log @{u}..HEAD --oneline 2>/dev/null | wc -l | tr -d '[:space:]')
+S5_UNPUSHED=$(git log origin/master..HEAD --oneline 2>/dev/null | wc -l || echo 0)
 if [ "$S5_UNCOMMITTED" -eq 0 ] && [ "$S5_UNPUSHED" -eq 0 ]; then
     S5_MSG="PASS (clean)"
 elif [ "$S5_UNCOMMITTED" -gt 0 ] && [ "$S5_UNPUSHED" -eq 0 ]; then
@@ -139,7 +139,11 @@ if len(p) >= 3:
     done
 fi
 if [ -z "$S6_MISSING" ]; then
-    S6_MSG="PASS ($S6_SKILL_COUNT/$S6_SKILL_COUNT)"
+    if [ "$S6_SKILL_COUNT" -eq 0 ]; then
+        S6_MSG="NOT_APPLICABLE (0 skills)"
+    else
+        S6_MSG="PASS ($S6_SKILL_COUNT/$S6_SKILL_COUNT)"
+    fi
 else
     S6_MSG="FAIL: $S6_MISSING"
     FAILS=$((FAILS + 1))

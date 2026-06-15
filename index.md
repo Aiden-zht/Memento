@@ -8,16 +8,16 @@ confidence: high
 last_reviewed: "2026-06-15"
 synopsis: "Memento 总入口：按 Agent 使用方式导航规章制度、产物规范、专业知识、素材库、项目知识、用户资料和 inbox。"
 provides: [知识库索引, 导航目录]
-version: 12
-changelog: "[Agent自修] 更新为全目录可审计顶层架构，加入新顶层目录入口与最小维护规则"
+version: 13
+changelog: "[Agent自修] git 副作用口径统一引用任务类型索引，删除重复约束"
 versions:
-  知识库索引: 8
+  知识库索引: 9
   导航目录: 3
 ---
 
 # Memento 索引
 
-> Git: https://gitee.com/Aiden-zht/Memento.git
+> Git: https://github.com/your-username/memento.git
 > 冷启动入口：[[AGENTS]]
 > 内容治理：[[规章制度/知识库管理/知识库内容治理规范/index]]
 
@@ -40,7 +40,7 @@ versions:
 - 先判定任务模式，再按任务类型索引和全文搜索加载相关文件。
 - 使用目录/文件前检查 `status`、`load`、`source`、`confidence`、`load_when`。
 - 没有合格 `index.md` 的目录，不视为正式知识源。
-- KB 改动必须 lint、commit、push。
+- KB 维护模式下的推送约束以 [[规章制度/知识库管理/任务类型索引]] 为准。
 
 ---
 

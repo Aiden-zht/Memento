@@ -6,8 +6,8 @@ category: "规章制度/知识库管理"
 load: default
 status: active
 synopsis: "新 Agent 冷启动入口——Memento 零记忆接入的第一步：git pull → 任务能力 → 任务模式 → 任务类型索引 → 按需加载。"
-version: 10
-changelog: "[Agent自修] 修复 Obsidian frontmatter 分隔符，补齐 YAML 结束线"
+version: 11
+changelog: "[Agent自修] git 副作用口径统一引用任务类型索引，硬规则只保留入口与检查动作"
 ---
 
 # AGENTS.md — Memento 冷启动入口
@@ -16,7 +16,7 @@ changelog: "[Agent自修] 修复 Obsidian frontmatter 分隔符，补齐 YAML �
 
 ```bash
 cd /path/to/memento
-git pull origin master
+git pull origin main
 ```
 
 然后先阅读：
@@ -57,6 +57,6 @@ git pull origin master
 - `provides` 只是辅助标签；搜不到时用全文搜索兜底。
 - 新增或修改 `.md` 必须符合最小 frontmatter；核心规范和执行层依赖文件才必须更新 `version/changelog`。
 - 改 KB 后必须运行 `bash scripts/lint-knowledge-base.sh`。
-- KB 改动必须 `git add -A` → `git commit` → `git push`；普通产出模式和 KB 使用模式禁止 git 副作用。
+- **git 副作用（`git add / commit / push`）以 [[规章制度/知识库管理/任务类型索引]] 为唯一 BLOCKING 裁定源：普通产出模式和 KB 使用模式禁止 git 副作用，KB 维护模式仅在用户授权或维护流程明示时才允许。**
 - 中间状态、生成产物、日志、图片二进制不入 KB。
 - 项目长期规则和事实默认进入本仓库 `项目知识/<项目>/`；代码、运行状态、日志和生成产物不入 KB。

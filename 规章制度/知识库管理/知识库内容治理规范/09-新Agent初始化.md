@@ -8,8 +8,8 @@ audience: [all]
 provides: [Agent初始化, 规范加载, Agent引导, 本地实现同步]
 status: active
 synopsis: "新 Agent 启动时如何拉取 KB、读任务索引、按全文搜索+synopsis 加载规范，并处理 skill/cron 的 requires_provides。"
-version: 18
-changelog: "[Agent自修] 圆桌审计后初始化入口对齐任务能力索引和项目知识"
+version: 19
+changelog: "[agent] 同步公开版：脱敏私有内容、统一泛化术语"
 versions:
   Agent初始化: 14
   规范加载: 3
@@ -76,7 +76,7 @@ git pull origin main
 当加载一个 skill 后，检查其 frontmatter：
 
 ```yaml
-requires_provides: [内容平台发布流程, 质量检查, 图片治理]
+requires_provides: [内容平台发布流程, 质量检查, 素材治理]
 kb_refresh_policy: runtime
 ```
 

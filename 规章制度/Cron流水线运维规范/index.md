@@ -8,7 +8,7 @@ audience: [all]
 provides: [Cron运维索引]
 status: active
 synopsis: "Cron 流水线运维入口：汇总定时任务架构、超时重试、链路追踪、异常处理和脚本引用规则。"
-version: 9
+version: 10
 changelog: "[Agent自修] 修复 Obsidian frontmatter：移除 version 字段前误加管道符"
 versions:
   Cron运维索引: 7

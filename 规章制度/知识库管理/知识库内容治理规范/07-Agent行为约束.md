@@ -8,8 +8,8 @@ audience: [all]
 provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 项目任务知识发现, 推送纪律, 用户产物优先, 任务模式判定, 使用前检查, 目录审计]
 status: active
 synopsis: "规定 Agent 读写 KB、按需检索、使用前检查、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 23
-changelog: "[agent] public sync：移除公开版残留私有标识并保留执行层闭环规则"
+version: 24
+changelog: "[agent] 同步公开版：脱敏私有内容、统一泛化术语"
 versions:
   Agent行为约束: 16
   读取优先级: 4
@@ -47,18 +47,13 @@ versions:
 |------|----------|----------|----------|
 | 普通产出模式 | 用户要求生成、撰写、设计、创建、整理、输出或保存普通产物；这是默认模式 | 输出给用户，或写入用户明确指定路径 | 修改 Memento、移动到 inbox、固化为规范、`git add / commit / push` |
 | KB 使用模式 | 用户要求参考、遵守、依据、检查 Memento / KB 规则，但未要求修改 KB | 只读 Memento，按已有规则完成用户任务 | 新增、移动、修改、固化 KB 资产；`git add / commit / push` |
-| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 Memento、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
+| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 agent_mem、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
 
 BLOCKING：不得仅凭“知识库、规范、Agent、治理、Memento、SOUL、角色”等关键词进入 KB 维护模式；不得仅凭“可复用”“其他 Agent 可能有用”自动固化到 KB。
 
 ### 7.0.3 git 副作用门禁
 
-`git add / commit / push` 是独立高副作用动作。只有以下情况允许执行：
-
-1. 用户明确要求提交、推送或完成 KB 维护闭环；或
-2. 当前任务已经明确进入 KB 维护模式，且对应 KB 维护流程明文要求提交推送；例如修改规章制度、项目知识、索引或执行层依赖说明后，声明完成前必须提交并推送。
-
-普通产出模式和 KB 使用模式下，禁止执行 `git add / commit / push`。
+`git add / commit / push` 的允许条件以 [[规章制度/知识库管理/任务类型索引]] 为唯一 BLOCKING 裁定源。
 
 ## 7.1 写入前检查
 
@@ -142,7 +137,7 @@ Agent 使用任何 KB 目录或文件前，必须做最小检查：
 | 只靠 provides 搜索且搜不到就放弃 | provides 是辅助标签；搜不到时必须用全文搜索兜底 |
 | 用 KB 机制替代 Agent 原生搜索/语义理解/git history | 属于过度设计；KB 只补 Agent 短板，不重造原生能力 |
 | 忽略项目 项目知识/ 项目任务知识 | 执行业务任务前必须检查当前项目是否有 `项目知识/<项目>/index.md`，按 [[规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计]] 的发现机制加载 |
-| **项目任务知识/规范改动后不 push** | **任何对 KB 项目任务知识（`项目知识/`）或规范文件的修改，必须在声明完成前执行 `git add -A → commit → push`。遗漏推送视为违规** | 本次事故：修改 `content_generator.py` 逻辑后未推送 KB，导致规范与实现脱节 |
+| 项目任务知识/规范改动后推送约束不清 | 任何对 KB 项目任务知识（`项目知识/`）或规范文件的修改，必须按 [[规章制度/知识库管理/任务类型索引]] 的 git 副作用门禁执行；遗漏推送视为违规 |
 
 ## 7.4 规范优化反馈
 
@@ -157,7 +152,7 @@ Agent 发现治理规范缺陷、有项目功能改进建议、或 Agent 行为�
 - 缺失关键流程步骤导致产出质量事故
 - 重大治理裁定改变了目录模型、入口权威链、加载策略、执行层闭环、公开版边界或反过度治理原则
 
-Agent 修改后：改内容 → 更新 version/changelog/versions（如适用）→ lint → commit → push。
+Agent 修改后：改内容 → 更新 version/changelog/versions（如适用） → lint → 按 [[规章制度/知识库管理/任务类型索引]] 判定是否以及如何 `git add / commit / push`。
 commit message 标注 `[Agent自修]` 或 `[agent]` 前缀即可追溯。
 
 重大治理裁定还必须自动追加到 [[规章制度/知识库管理/知识库治理重构复盘]]：只记录“为什么这样设计”的背景、被否决方案、最终裁定、当前有效入口和不应回滚项；不复制当前规范全文，不记录一次性执行日志。
@@ -208,20 +203,17 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 
 ### 7.6.0 规则变更后的最小只读验收
 
-KB 仍然只颁布规则，不管理执行层实现；但规则变更完成前，Agent 必须做最小只读验收，防止旧规则仍在生产执行层运行。
+KB 只颁布规则，不管理执行层实现；但规则变更完成前，Agent 必须做最小只读验收，防止旧规则仍在生产执行层运行。
 
 触发条件：修改 KB 规则、目录结构、任务入口、Agent 行为、frontmatter/provides/requires、`kb_refresh_policy`、产物规范或项目契约。
 
-检查范围：
+验收协议见 [[规章制度/知识库管理/KB-执行层只读验收协议]]。本地实现的验收结果只出三种状态：
 
-1. AGENTS.md、README、任务能力索引、任务类型索引、强制规则索引是否仍引用旧入口、旧目录名或旧规则口径。
-2. 依赖 KB 的 skill frontmatter 是否声明 `requires_provides` 与 `kb_refresh_policy: runtime`。
-3. cron prompt 是否有 Step 0 加载 KB，且未硬编码旧路径或旧目录名。
-4. 本地 scripts / role SOUL / prompt 中是否存在会影响执行的旧词、旧路径、旧规则。
+- **PASS**：已检查且未发现旧规则继续运行。
+- **NOT_APPLICABLE**：该本地实现不依赖被改动的规则，或不在本次验收范围内。
+- **UNVERIFIED**：无法访问该执行资产（如私有 profile、外部 repo），必须在报告中列出不可访问范围和原因。
 
-验收输出必须说明：已检查范围、跳过范围、不可访问范围、未发现依赖、旧词/旧路径命中。不得把具体 skill、cron、script、prompt 的私有内容写进 KB 当法律；只记录通用检查要求。
-
-**闭环保证：任何自建 skill，只需在 frontmatter 声明两行——`requires_provides` + `kb_refresh_policy: runtime`。不需要硬编码 KB 文件路径、不需要写桥接代码、不需要手动同步。KB 规范改了内容（阈值、流程、检查项），下次执行自动读最新版。KB 改了目录结构，provides-search 搜索定位，不受路径变化影响。**
+不得把具体 skill、cron、script、prompt 的私有内容写进 KB 当法律；只记录通用检查要求。
 
 ### 7.6.1 适用范围
 
@@ -233,8 +225,8 @@ KB 仍然只颁布规则，不管理执行层实现；但规则变更完成前�
 
 | 类型 | 条件 | 示例 |
 |------|------|------|
-| 生产 skill | 依赖 KB 规范才能正确执行 | <your-project>、validator-agent、kpi-agent |
-| cron job | 定时执行业务流程或规范校验 | 每日 示例数据源 折扣文章流水线 |
+| 生产 skill | 依赖 KB 规范才能正确执行 | example-agent、validator-agent、kpi-agent |
+| cron job | 定时执行业务流程或规范校验 | 每日示例内容流水线 |
 | 本地脚本 | 代码中硬编码了 KB 规则、阈值、流程 | content_generator.py、validator 脚本 |
 
 不需要接入：纯工具封装、一次性临时脚本、不依赖 KB 规范的 API 调用。
@@ -244,7 +236,7 @@ KB 仍然只颁布规则，不管理执行层实现；但规则变更完成前�
 每个依赖 KB 的生产 skill 必须在 frontmatter 声明：
 
 ```yaml
-requires_provides: [内容平台发布流程, 质量检查, 图片治理]
+requires_provides: [内容发布流程, 质量检查, 素材治理]
 kb_refresh_policy: runtime
 ```
 
@@ -258,8 +250,8 @@ kb_refresh_policy: runtime
 
 ```yaml
 spec_versions:
-  内容平台发布流程: 3
-  图片治理: 2
+  内容发布流程: 3
+  素材治理: 2
 ```
 
 ### 7.6.3 运行时对齐流程
@@ -268,7 +260,7 @@ spec_versions:
 
 ```bash
 cd /path/to/memento
-git pull origin master
+git pull origin main
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```
 

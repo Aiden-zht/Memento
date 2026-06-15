@@ -8,8 +8,8 @@ audience: [all]
 provides: [多Agent协作, git协作规范, 冲突处理, Agent标识]
 status: active
 synopsis: "多 Agent 共享 Memento 时的 git 协作规范：启动先 pull、修改前检查状态、提交标识、冲突处理、按需加载，避免并行覆盖。"
-version: 11
-changelog: "[agent] sync from private d53068f: desensitize memento framework sync、default branch→main、private remote→GitHub、私有项目路径→<your-project>；changelog 不变更业务语义"
+version: 12
+changelog: "[agent] 同步公开版：脱敏私有内容、统一泛化术语"
 versions:
   多Agent协作: 8
   git协作规范: 4
@@ -107,7 +107,7 @@ Agent 启动时按以下优先级选择性加载知识库内容：
 ```bash
 git add .
 git commit -m "[写作-AgentA] 修复内容平台API手册 freepublish 说明 + 扩展面试tags — 内容平台API开发手册.md, 面试经验.md"
-git push origin master
+git push origin main
 ```
 
 ### 命名约定
@@ -128,7 +128,7 @@ git pull origin main --rebase
 
 # 2. 如果有冲突，解决后
 # 3. 重新推送
-git push origin master
+git push origin main
 ```
 
 ### 防止覆盖
