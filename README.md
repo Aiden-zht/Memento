@@ -6,8 +6,8 @@ category: "索引"
 load: index
 status: active
 synopsis: "Memento 知识库首页：AI-Native 知识底座 + Obsidian 即开即用，让任何 Agent 零记忆接入，自主读规范、建技能、修错误、验产出。"
-version: 17
-changelog: "[Agent自修] README 工具链表和人操作脚本全部改为'对 Agent 说'风格"
+version: 18
+changelog: "[Agent自修] 新增计划章节，记录封版后 todo"
 ---
 
 # Memento
@@ -80,8 +80,8 @@ Memento 对人的使用量极小。你和它之间的交互大概只有这三种
 
 ```bash
 # 1. 克隆
-git clone https://gitee.com/aidenzht/Memento.git
-cd Memento
+git clone https://github.com/Aiden-zht/Memento.git
+cd agent_mem
 
 # 2. 安装 git hook（只做一次）
 bash scripts/install-hooks.sh
@@ -164,6 +164,20 @@ memento/
 5. **硬规则前置** — BLOCKING 规则写在入口，Agent 不能跳过
 6. **KB 是宪法不是政府** — 只定义规则，不执行规则
 7. **品牌无关** — 不出现任何平台或产品特定名称
+
+---
+
+## 计划
+
+以下是从当前封版起点开始推进的工作，按优先级排列：
+
+| # | 目标 | 说明 |
+|---|------|------|
+| 1 | self-check 用 Python 重写 | 摆脱 bash 依赖，Windows/Linux Agent 通用 |
+| 2 | Agent 首次接入自动化 | 提供仓库 URL，Agent 自主完成 clone + hook + 检查 |
+| 3 | 三种部署模式 | ① 远端 git（当前）② 纯本地（clone 后不 push）③ 无 git（单 Agent，文件时间戳/副本追踪） |
+| 4 | README 补充部署模式说明 | 人不需要懂 git/linux，首次使用只需给 Agent 一个指令 |
+| 5 | 单 Agent 场景适配 | 剥离当前依赖多 Agent 协作的逻辑（git 门禁、执行层对齐等），给出简化版 |
 
 ---
 
