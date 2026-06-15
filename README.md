@@ -118,8 +118,8 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 ### 给 Agent
 
 ```bash
-cd /path/to/memento
-git pull origin master
+cd /path/to/Memento
+git pull origin main
 ```
 
 然后读 `AGENTS.md`，它指向任务能力索引和任务类型索引，剩下的自动走。
@@ -160,6 +160,16 @@ python3 scripts/audit-agent-usability.py
 5. **BLOCKING 规则前置** — 硬性约束写在入口，Agent 不能跳过
 6. **KB 是宪法，不是政府** — 只定义规则，不执行规则
 7. **品牌无关** — 不出现任何平台或产品特定名称
+
+---
+
+## 当前封板能力
+
+Memento 当前已具备：冷启动入口、任务能力索引、任务类型索引、项目任务知识、inbox 消化、健康检查、格式 lint、Agent 可用性审计、provides 辅助定位、提交门禁、执行层对齐、公开版同步。
+
+下一步优先补：普通用户入口体验、执行层对齐自动报告、公开版最小项目示例、零记忆 Agent L3 验收。
+
+设计宗旨：KB 只颁布规则，不执行规则；Agent 按任务入口和全文搜索按需读取，工具只是实现手段；不 all-load、不建重 manifest、不把私有业务内容混入通用框架。
 
 ---
 
