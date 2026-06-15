@@ -6,8 +6,9 @@ category: "规章制度/知识库管理"
 load: default
 status: active
 synopsis: "新 Agent 冷启动入口——Memento 零记忆接入的第一步：git pull → 任务能力 → 任务模式 → 任务类型索引 → 按需加载。"
-version: 8
-changelog: "[Agent自修] 新增任务能力入口：先判断要干什么活，再由 Agent 自选工具完成"
+version: 10
+changelog: "[Agent自修] 修复 Obsidian frontmatter 分隔符，补齐 YAML 结束线"
+---
 
 # AGENTS.md — Memento 冷启动入口
 
@@ -15,7 +16,7 @@ changelog: "[Agent自修] 新增任务能力入口：先判断要干什么活，
 
 ```bash
 cd /path/to/memento
-git pull origin main
+git pull origin master
 ```
 
 然后先阅读：
@@ -39,13 +40,13 @@ git pull origin main
 
 执行业务任务（如"发布文章"）时，额外执行：
 
-1. 检查当前项目目录是否有 `项目知识/<项目>/index.md`
-2. 若存在 → 读 `depends_on` → 加载 Memento 对应规范 → 加载 `项目知识/rules/` 和 `项目知识/references/`
-3. 若不存在 → 按 `规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计` 引导用户创建
+1. 在 Memento 仓库检查 `项目知识/<项目>/index.md`
+2. 若存在 → 读 `depends_on` → 加载 Memento 对应规范 → 加载项目任务知识规则和参考
+3. 若不存在 → 按 `规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计` 引导用户在 Memento 内创建
 
 ## 创建新业务
 
-用户说"新建业务"时，Agent 按 `12-项目任务知识接入设计` 创建独立项目 `项目知识/`，不在本仓库中创建业务目录。模板骨架在 `_templates/（仅结构模板，非规则源）`。
+用户说"新建业务"时，Agent 按 `12-项目任务知识接入设计` 在本仓库 `项目知识/<项目>/` 创建项目任务知识；外部项目目录只存实现、状态和产物，除非用户明确指定外部知识源。模板骨架在 `_templates/（仅结构模板，非规则源）`。
 
 完成后（或首次进入），运行验收测试确认 KB 可用：参考 `09-新Agent初始化#第七步`。
 
@@ -58,4 +59,4 @@ git pull origin main
 - 改 KB 后必须运行 `bash scripts/lint-knowledge-base.sh`。
 - KB 改动必须 `git add -A` → `git commit` → `git push`；普通产出模式和 KB 使用模式禁止 git 副作用。
 - 中间状态、生成产物、日志、图片二进制不入 KB。
-- 业务规则不入本仓库，放入对应项目 `项目知识/` 目录。
+- 项目长期规则和事实默认进入本仓库 `项目知识/<项目>/`；代码、运行状态、日志和生成产物不入 KB。

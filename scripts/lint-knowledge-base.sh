@@ -63,7 +63,6 @@ file_grade() {
   case "$rel" in
     规章制度/*)  echo "core" ;;
     产物规范/*|专业知识/*|素材库/*|项目知识/*|用户资料/*)  echo "ref" ;;
-    业务/*|知识/*)  echo "ref" ;;  # 迁移期兼容旧路径
     *)           echo "raw" ;;
   esac
 }
@@ -81,7 +80,31 @@ check_frontmatter() {
   [[ "$grade" == "raw" ]] && return   # 原始资料跳过
 
   local content
-  content=$(head -30 "$file")
+  content=$(head -80 "$file")
+
+  local first_line
+  IFS= read -r first_line <<< "$content"
+  if [[ "$first_line" != "---" ]]; then
+    ERRORS+=("E01|$rel|缺少 YAML frontmatter")
+    return
+  fi
+
+  local fm_closed=0 fm_line=0
+  while IFS= read -r line; do
+    fm_line=$((fm_line + 1))
+    [[ $fm_line -eq 1 ]] && continue
+    if [[ "$line" == "---" ]]; then
+      fm_closed=1
+      break
+    fi
+    if [[ "$line" == '|'* ]]; then
+      ERRORS+=("E01|$rel|frontmatter 字段前误加管道符: $line")
+    fi
+  done <<< "$content"
+  if [[ $fm_closed -eq 0 ]]; then
+    ERRORS+=("E01|$rel|YAML frontmatter 缺少结束分隔符 ---")
+    return
+  fi
 
   local title="" date="" tags="" category=""
   local load="" audience="" provides="" status=""
@@ -126,14 +149,7 @@ check_frontmatter() {
   [[ -z "$category" ]] && missing_req+=" category"
 
   if [[ -n "$missing_req" ]]; then
-    # 检查是否有 frontmatter 标记
-    local first_line
-    IFS= read -r first_line <<< "$content"
-    if [[ "$first_line" == "---" ]]; then
-      ERRORS+=("E01|$rel|frontmatter 缺少必需字段:$missing_req")
-    else
-      ERRORS+=("E01|$rel|缺少 YAML frontmatter")
-    fi
+    ERRORS+=("E01|$rel|frontmatter 缺少必需字段:$missing_req")
   fi
 
   # ── 推荐字段（仅 core） ──

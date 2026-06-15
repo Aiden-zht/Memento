@@ -1,6 +1,6 @@
 #!/bin/bash
 # === 知识库安全提交脚本 ===
-# 自动 prepend [agent-标识] 前缀 + git add -A + commit + push
+# 自动 prepend [agent-标识] 前缀 + lint/audit/self-check + git add -A + commit + push
 # 用法: bash scripts/safe-commit.sh "变更描述 — 变动文件列表"
 # Agent 标识从 HERMES_MODEL 环境变量或 git config 自动推断
 
@@ -38,6 +38,12 @@ echo ""
 # 验证
 echo "--- 运行 lint ---"
 bash scripts/lint-knowledge-base.sh
+echo ""
+echo "--- 运行 Agent usability audit ---"
+python3 scripts/audit-agent-usability.py
+echo ""
+echo "--- 运行 self-check ---"
+bash scripts/self-check.sh || true
 echo ""
 
 # 执行

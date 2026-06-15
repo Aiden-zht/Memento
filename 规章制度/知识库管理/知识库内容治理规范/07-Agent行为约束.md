@@ -8,10 +8,10 @@ audience: [all]
 provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 项目任务知识发现, 推送纪律, 用户产物优先, 任务模式判定, 使用前检查, 目录审计]
 status: active
 synopsis: "规定 Agent 读写 KB、按需检索、使用前检查、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 21
-changelog: "[agent] sync from private d53068f: desensitize agent_mem→memento、origin/master→origin/main、gitee→github、私有项目路径→<your-project>；changelog 不变更业务语义"
+version: 22
+changelog: "[agent] public sync：脱敏 production skill 示例并保留项目知识/执行层闭环规则"
 versions:
-  Agent行为约束: 14
+  Agent行为约束: 15
   读取优先级: 4
   写入检查: 3
   禁止行为: 6
@@ -47,7 +47,7 @@ versions:
 |------|----------|----------|----------|
 | 普通产出模式 | 用户要求生成、撰写、设计、创建、整理、输出或保存普通产物；这是默认模式 | 输出给用户，或写入用户明确指定路径 | 修改 Memento、移动到 inbox、固化为规范、`git add / commit / push` |
 | KB 使用模式 | 用户要求参考、遵守、依据、检查 Memento / KB 规则，但未要求修改 KB | 只读 Memento，按已有规则完成用户任务 | 新增、移动、修改、固化 KB 资产；`git add / commit / push` |
-| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 memento、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
+| KB 维护模式 | 用户明确要求写入知识库、纳入 Memento、固化规范、更新 KB、维护 agent_mem、消化 inbox、修改规章制度、整理知识库或提交知识库变更 | 在授权范围内按 KB 维护流程修改 Memento | 超出授权范围修改；未获提交授权时执行 `git add / commit / push` |
 
 BLOCKING：不得仅凭“知识库、规范、Agent、治理、Memento、SOUL、角色”等关键词进入 KB 维护模式；不得仅凭“可复用”“其他 Agent 可能有用”自动固化到 KB。
 
@@ -56,7 +56,7 @@ BLOCKING：不得仅凭“知识库、规范、Agent、治理、Memento、SOUL�
 `git add / commit / push` 是独立高副作用动作。只有以下情况允许执行：
 
 1. 用户明确要求提交、推送或完成 KB 维护闭环；或
-2. 当前任务已经明确进入 KB 维护模式，且对应 KB 维护流程明文要求提交推送。
+2. 当前任务已经明确进入 KB 维护模式，且对应 KB 维护流程明文要求提交推送；例如修改规章制度、项目知识、索引或执行层依赖说明后，声明完成前必须提交并推送。
 
 普通产出模式和 KB 使用模式下，禁止执行 `git add / commit / push`。
 
@@ -97,7 +97,7 @@ Agent 读取知识库时，按以下优先级：
 |--------|------|------|
 | 1 | `规章制度/` | 必须遵守；KB 和 Agent 自身运行规则 |
 | 2 | `产物规范/` | 生成或验收对应产物时必须遵守 |
-| 3 | `项目知识/` 中的项目契约 | 仅在对应项目内有约束力 |
+| 3 | `项目知识/` 中的项目契约 | 默认位于 Memento 仓库内 `项目知识/<项目>/`，仅在对应项目内有约束力 |
 | 4 | `专业知识/` | 判断参考，不是规则源 |
 | 5 | `素材库/`、`用户资料/` | 表达/案例/来源参考，不是事实或规则权威 |
 | 6 | `inbox/` | 仅消化任务读取，不作为正式知识 |
@@ -106,7 +106,7 @@ Agent 读取知识库时，按以下优先级：
 
 正确路径：
 
-1. **任务入口**：先读 `规章制度/知识库管理/任务类型索引.md`，确认任务类型、关键词、强制规则摘要。
+1. **任务入口**：先读 `规章制度/知识库管理/任务类型索引.md`，确认任务类型、关键词、BLOCKING 规则和最低验证。任务类型索引是唯一任务路由与 BLOCKING 执行入口；`强制规则索引` 只作 archived 审计摘要，不进入普通冷启动链。
 2. **发现候选**：用全文搜索定位候选文件。
    - Hermes Agent：`search_files(pattern="关键词", target="content")`
    - Shell：`rg "关键词" --include="*.md" -l`
@@ -233,8 +233,8 @@ KB 仍然只颁布规则，不管理执行层实现；但规则变更完成前�
 
 | 类型 | 条件 | 示例 |
 |------|------|------|
-| 生产 skill | 依赖 KB 规范才能正确执行 | example-agent、validator-agent、kpi-agent |
-| cron job | 定时执行业务流程或规范校验 | 每日示例内容流水线 |
+| 生产 skill | 依赖 KB 规范才能正确执行 | <your-project>、validator-agent、kpi-agent |
+| cron job | 定时执行业务流程或规范校验 | 每日 示例数据源 折扣文章流水线 |
 | 本地脚本 | 代码中硬编码了 KB 规则、阈值、流程 | content_generator.py、validator 脚本 |
 
 不需要接入：纯工具封装、一次性临时脚本、不依赖 KB 规范的 API 调用。
@@ -268,7 +268,7 @@ spec_versions:
 
 ```bash
 cd /path/to/memento
-git pull origin main
+git pull origin master
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```
 

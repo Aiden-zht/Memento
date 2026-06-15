@@ -39,14 +39,14 @@ Memento 不是文档仓库。它是一个**自描述、自修复、自验收**�
 
 **换 Agent 不换脑子。** 换新模型、换新平台、换新机器——Agent 拿到这个仓库就能干活。技能自修复、规范自感知，不需要重新调教。
 
-**业务无关。** Memento 只管规范和通用知识。内容发布、数据处理——那些是业务项目 `项目知识/` 的事。Memento 定义项目任务知识标准，各项目按标准创建，Agent 自动识别。
+**业务解耦。** Memento 不存代码、运行状态和产物；长期项目规则和事实默认放在本仓库 `项目知识/<项目>/`，由 Memento 定义结构，Agent 自动识别。
 
 ---
 
 ## 架构
 
 ```
-memento/
+agent_mem/
 ├── AGENTS.md                          ← Agent 冷启动入口
 ├── inbox/                             ← 人的投递口（扔文章就行）
 ├── 规章制度/                          ← Agent 必须遵守的规则
@@ -69,7 +69,7 @@ memento/
 
 **Agent 权威链**：AGENTS.md → 任务能力索引 → 任务类型索引 → index/synopsis → 按需正文 → 执行。README 只是人类介绍和 Quickstart，不承载规则权威。
 
-**业务解耦**：业务规则由各项目 `项目知识/` 独立维护，通过 [[规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计]] 的标准结构接入。Agent 执行任务时自动检查项目 `项目知识/` 目录并加载。
+**业务解耦**：长期项目规则和事实由本仓库 `项目知识/<项目>/` 维护，通过 [[规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计]] 的标准结构接入；外部项目目录只存实现、状态和产物。
 
 ---
 
@@ -79,7 +79,7 @@ memento/
 新 Agent 只知道仓库路径，就能通过 `AGENTS.md` → `任务类型索引` → 规范 完成冷启动。实测：零上下文 Agent 跑通完整业务流水线。
 
 ### 📦 项目任务知识接入设计
-Memento 定义项目任务知识标准结构（`项目知识/`），但不存放任何业务内容。用户说"新建写作业务"，Agent 读模板 → 创建 项目知识/ → 对话逐步完善规则。见 `12-项目任务知识接入设计`。
+Memento 定义项目任务知识标准结构（`项目知识/<项目>/`）。用户说"新建写作业务"，Agent 读模板 → 在本仓库创建项目知识 → 对话逐步完善规则。见 `12-项目任务知识接入设计`。
 
 ### 🔧 技能自举
 KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时自动 `git pull` → `provides-search` → 读最新规范，不需要人手动同步。
@@ -109,7 +109,7 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 ### 给人
 
 ```bash
-# 1. git clone https://gitee.com/Aiden-zht/Memento.git
+# 1. git clone https://gitee.com/aidenzht/agent_mem.git
 # 2. 把文章扔进 inbox/
 # 3. 对 Agent 说：消化 inbox
 # 4. 通过对话建立规范，Agent 自己整理
@@ -118,7 +118,7 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 ### 给 Agent
 
 ```bash
-cd /path/to/memento
+cd /path/to/agent_mem
 git pull origin master
 ```
 

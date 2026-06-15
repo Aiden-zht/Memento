@@ -3,7 +3,7 @@
 provides-search — 辅助 provides 标签搜索工具
 
 定位：
-  本脚本用于已知 provides 标签、cron 固定依赖或 skill 依赖检查；常规任务主入口仍是任务索引 + 全文搜索 + synopsis 筛选。
+  本脚本用于已知 provides 标签、cron 固定依赖或 skill 依赖检查；常规任务主入口仍是任务类型索引 + 全文搜索 + synopsis 筛选。
 
 解决：
   1. 不再用 rg "provides:.*标签" 正则 hack
@@ -12,19 +12,19 @@ provides-search — 辅助 provides 标签搜索工具
 
 用法：
   python3 scripts/provides-search.py 标签1 标签2 ...
-  python3 scripts/provides-search.py 质量检查 示例业务
+  python3 scripts/provides-search.py 质量检查 游戏折扣
   python3 scripts/provides-search.py --files 标签名  # 仅输出文件路径
   python3 scripts/provides-search.py --synopsis 标签1 标签2  # 摘要模式：title + synopsis + provides + version + load
 
 输出 JSON：
 
   {
-    "query": ["质量检查", "示例业务"],
+    "query": ["质量检查", "游戏折扣"],
     "results": {
       "质量检查": [
         {"file": "...", "frontmatter": {...}, "matches": ["质量检查", "质量检查规则"]}
       ],
-      "示例业务": [...]
+      "游戏折扣": [...]
     },
     "not_found": ["不存在的标签"],
     "summary": "2 files across 2 tags"
@@ -33,7 +33,7 @@ provides-search — 辅助 provides 标签搜索工具
 --synopsis 模式输出更紧凑（用于 cron prompt 注入）：
 
   {
-    "query": ["质量检查", "示例业务"],
+    "query": ["质量检查", "游戏折扣"],
     "results": {
       "质量检查": [
         {
