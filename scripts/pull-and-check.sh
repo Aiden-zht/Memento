@@ -11,7 +11,7 @@ cd "$(dirname "$0")/.."
 STATE_FILE=".last_seen_commit"
 
 # 拉取最新
-git pull origin main 2>/dev/null || true
+git pull origin master 2>/dev/null || true
 
 # 读取上次记录的 commit
 LAST_SEEN=$(cat "$STATE_FILE" 2>/dev/null || echo "")

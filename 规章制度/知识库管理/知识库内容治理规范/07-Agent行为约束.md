@@ -8,8 +8,8 @@ audience: [all]
 provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 项目任务知识发现, 推送纪律, 用户产物优先, 任务模式判定, 使用前检查, 目录审计]
 status: active
 synopsis: "规定 Agent 读写 KB、按需检索、使用前检查、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 19
-changelog: "[Agent自修] 圆桌审计后统一七类正式目录命名，并补规则变更时执行层最小只读验收"
+version: 20
+changelog: "[Agent自修] 明确重大治理裁定必须自动写入知识库治理重构复盘"
 versions:
   Agent行为约束: 14
   读取优先级: 4
@@ -155,9 +155,12 @@ Agent 发现治理规范缺陷、有项目功能改进建议、或 Agent 行为�
 - 规则矛盾使 Agent 无法工作
 - lint 脚本报错但规范要求不合理
 - 缺失关键流程步骤导致产出质量事故
+- 重大治理裁定改变了目录模型、入口权威链、加载策略、执行层闭环、公开版边界或反过度治理原则
 
 Agent 修改后：改内容 → 更新 version/changelog/versions（如适用）→ lint → commit → push。
 commit message 标注 `[Agent自修]` 或 `[agent]` 前缀即可追溯。
+
+重大治理裁定还必须自动追加到 [[规章制度/知识库管理/知识库治理重构复盘]]：只记录“为什么这样设计”的背景、被否决方案、最终裁定、当前有效入口和不应回滚项；不复制当前规范全文，不记录一次性执行日志。
 
 ### P2（锦上添花）+ 项目建议 — 走工单流程
 
@@ -265,7 +268,7 @@ spec_versions:
 
 ```bash
 cd /path/to/memento
-git pull origin master
+git pull origin main
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```
 

@@ -8,8 +8,8 @@ audience: [all]
 provides: [多Agent协作, git协作规范, 冲突处理, Agent标识]
 status: active
 synopsis: "多 Agent 共享 Memento 时的 git 协作规范：启动先 pull、修改前检查状态、提交标识、冲突处理、按需加载，避免并行覆盖。"
-version: 11
-changelog: "[Agent自修] 公开版脱敏示例项目名称与路径"
+version: 10
+changelog: "[Agent自修] 清理旧业务路径残留，改为新顶层目录架构"
 versions:
   多Agent协作: 8
   git协作规范: 4
@@ -43,7 +43,7 @@ versions:
 cd {{WORKSPACE}}/references/agent_mem
 
 # Step 1: 拉取最新
-git pull origin master
+git pull origin main
 
 # Step 2: 查看新增 commit（只展示自上次以来的变更）
 LAST_SEEN=$(cat .last_seen_commit 2>/dev/null || echo "")
@@ -124,7 +124,7 @@ git push origin master
 
 ```bash
 # 1. 先拉取
-git pull origin master --rebase
+git pull origin main --rebase
 
 # 2. 如果有冲突，解决后
 # 3. 重新推送
@@ -153,7 +153,7 @@ git push origin master
 
 ## 7. 相关文档
 
-- 示例业务 Agent — 项目协作（项目文档在 `{{WORKSPACE}}/tools/example-agent/`）
+- 示例业务 Agent — 项目协作（项目文档在 `{{WORKSPACE}}/tools/<your-project>/`）
 
 ---
 

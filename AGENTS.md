@@ -15,7 +15,7 @@ changelog: "[Agent自修] 新增任务能力入口：先判断要干什么活，
 
 ```bash
 cd /path/to/memento
-git pull origin master
+git pull origin main
 ```
 
 然后先阅读：

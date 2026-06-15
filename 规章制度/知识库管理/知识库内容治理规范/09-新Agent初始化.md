@@ -8,8 +8,8 @@ audience: [all]
 provides: [Agent初始化, 规范加载, Agent引导, 本地实现同步]
 status: active
 synopsis: "新 Agent 启动时如何拉取 KB、读任务索引、按全文搜索+synopsis 加载规范，并处理 skill/cron 的 requires_provides。"
-version: 19
-changelog: "[Agent自修] 公开版脱敏路径并同步任务能力入口"
+version: 18
+changelog: "[Agent自修] 圆桌审计后初始化入口对齐任务能力索引和项目知识"
 versions:
   Agent初始化: 14
   规范加载: 3
@@ -35,7 +35,7 @@ bash scripts/install-hooks.sh
 
 ```bash
 cd /path/to/memento
-git pull origin master
+git pull origin main
 ```
 
 详细操作见 [[规章制度/知识库管理/知识库内容治理规范/00-读取规范]]。
@@ -110,7 +110,7 @@ kb_refresh_policy: runtime
 
 ```bash
 cd /path/to/memento
-git pull origin master
+git pull origin main
 python3 scripts/provides-search.py --synopsis 标签1 标签2 ...
 ```
 

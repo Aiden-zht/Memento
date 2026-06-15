@@ -75,11 +75,7 @@ fi
 
 # ── S5: Git 清洁度 ────────────────────────────────────────────────
 S5_UNCOMMITTED=$(git status --porcelain 2>/dev/null | wc -l)
-S5_UPSTREAM=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo origin/HEAD)
-if ! git rev-parse --verify "$S5_UPSTREAM" >/dev/null 2>&1; then
-    S5_UPSTREAM=$(git remote show origin 2>/dev/null | awk '/HEAD branch/ {print "origin/" $NF}' || echo origin/main)
-fi
-S5_UNPUSHED=$(git log "$S5_UPSTREAM"..HEAD --oneline 2>/dev/null | wc -l)
+S5_UNPUSHED=$(git log @{u}..HEAD --oneline 2>/dev/null | wc -l | tr -d '[:space:]')
 if [ "$S5_UNCOMMITTED" -eq 0 ] && [ "$S5_UNPUSHED" -eq 0 ]; then
     S5_MSG="PASS (clean)"
 elif [ "$S5_UNCOMMITTED" -gt 0 ] && [ "$S5_UNPUSHED" -eq 0 ]; then
