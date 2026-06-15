@@ -80,7 +80,7 @@ Memento 对人的使用量极小。你和它之间的交互大概只有这三种
 
 ```bash
 # 1. 克隆
-git clone https://github.com/Aiden-zht/Memento.git
+git clone https://gitee.com/Aiden-zht/Memento.git
 cd agent_mem
 
 # 2. 安装 git hook（只做一次）
@@ -105,7 +105,7 @@ cp 我的文章.md inbox/
 Agent（首次接入）：
 
 ```
-1. git pull origin main
+1. git pull origin master
 2. 读 AGENTS.md → 确定任务类型
 3. 按索引加载规范 → 执行
 ```
@@ -115,7 +115,7 @@ Agent（首次接入）：
 ## 目录结构
 
 ```
-memento/
+agent_mem/
 ├── AGENTS.md              ← Agent 冷启动入口（人不需要看）
 ├── inbox/                 ← 投递口（扔文章进去就行）
 ├── 规章制度/              ← Agent 必须遵守的规则（治理、协作、运维）

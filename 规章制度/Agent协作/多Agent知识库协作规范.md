@@ -8,8 +8,8 @@ audience: [all]
 provides: [多Agent协作, git协作规范, 冲突处理, Agent标识]
 status: active
 synopsis: "多 Agent 共享 Memento 时的 git 协作规范：启动先 pull、修改前检查状态、提交标识、冲突处理、按需加载，避免并行覆盖。"
-version: 12
-changelog: "[agent] 同步公开版：脱敏私有内容、统一泛化术语"
+version: 10
+changelog: "[Agent自修] 清理旧业务路径残留，改为新顶层目录架构"
 versions:
   多Agent协作: 8
   git协作规范: 4
@@ -23,7 +23,7 @@ versions:
 > **适用范围**：基础设施层 — 所有使用本知识库的 Agent 必须遵守；涉及 KB 写入、commit/push、冲突处理或多 Agent 协作时按需加载正文。
 > 定义多个 Agent/会话共用一个 Git 知识库时的变更感知、commit 格式、冲突处理。
 >
-> ⚠️ 本文档与「内容平台发布流程与质量规范」中的 Agent A/B 流水线是不同维度的概念：
+> ⚠️ 本文档与「公众号发布流程与质量规范」中的 Agent A/B 流水线是不同维度的概念：
 > - 本文档 = Agent 之间如何协作（git 层面）
 > - 发布流程 = Agent 之间如何分工完成特定任务（业务层面）
 
@@ -40,7 +40,7 @@ versions:
 每个 Agent 在操作知识库前，必须执行三步：
 
 ```bash
-cd {{WORKSPACE}}/references/memento
+cd {{WORKSPACE}}/references/agent_mem
 
 # Step 1: 拉取最新
 git pull origin main
@@ -82,7 +82,7 @@ Agent 启动时按以下优先级选择性加载知识库内容：
 > `规章制度/` 下其他文件（知识库定位、存什么、目录分类、文件规范等）按 `load: on-demand` 对待，仅当涉及知识库写入/创建/治理时按需加载。
 
 **示例**：
-- 内容平台发文 Agent → 任务索引 + 内容平台相关规范；仅在改 KB 时加载协作规范
+- 公众号发文 Agent → 任务索引 + 公众号相关规范；仅在改 KB 时加载协作规范
 - 面试准备 Agent → 任务索引 + `专业知识/面试经验/` 相关文件
 - 抖音新业务 Agent → 任务索引 + 新业务接入/写作通用规范；需要创建 KB 文件时再加载治理规范
 
@@ -106,7 +106,7 @@ Agent 启动时按以下优先级选择性加载知识库内容：
 
 ```bash
 git add .
-git commit -m "[写作-AgentA] 修复内容平台API手册 freepublish 说明 + 扩展面试tags — 内容平台API开发手册.md, 面试经验.md"
+git commit -m "[写作-AgentA] 修复公众号API手册 freepublish 说明 + 扩展面试tags — 公众号API开发手册.md, 面试经验.md"
 git push origin main
 ```
 
@@ -153,7 +153,7 @@ git push origin main
 
 ## 7. 相关文档
 
-- 示例业务 Agent — 项目协作（项目文档在 `{{WORKSPACE}}/tools/<your-project>/`）
+- 游戏折扣Agent — 项目协作（项目文档在 `{{WORKSPACE}}/tools/<your-project>/`）
 
 ---
 
@@ -163,14 +163,14 @@ git push origin main
 
 Agent 调用方式：
 ```bash
-bash {{WORKSPACE}}/references/memento/scripts/pull-and-check.sh
+bash {{WORKSPACE}}/references/agent_mem/scripts/pull-and-check.sh
 ```
 
 输出示例：
 ```
 ===== 其他 Agent 的变更 =====
 c9eb934 [deepseek-chat] 新增字节跳动大模型SRE面经 — 面试经验.md
-41e8d34 [写作-AgentA] 补充内容平台运营策略文档 — 内容平台运营策略.md
+41e8d34 [写作-AgentA] 补充公众号运营策略文档 — 公众号运营策略.md
 ===== 当前 HEAD: 1559c08 =====
 ```
 

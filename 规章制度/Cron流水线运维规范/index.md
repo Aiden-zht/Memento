@@ -8,8 +8,8 @@ audience: [all]
 provides: [Cron运维索引]
 status: active
 synopsis: "Cron 流水线运维入口：汇总定时任务架构、超时重试、链路追踪、异常处理和脚本引用规则。"
-version: 10
-changelog: "[Agent自修] 修复 Obsidian frontmatter：移除 version 字段前误加管道符"
+version: 11
+changelog: "[sync] desensitize wikilink: replace broken private wikilinks with generic text"
 versions:
   Cron运维索引: 7
 ---
@@ -27,6 +27,6 @@ Cron流水线的架构设计、超时策略、链路追踪和异常处理规范�
 
 ## 相关文档
 
-- `产物规范/写作/08-定时任务通用规范` — 写作域定时任务规范（公开框架不复制私有写作规范正文）
+- `产物规范/写作/08-定时任务通用规范`（公开框架不复制私有业务文档 — 参考同路径在你的 Memento 仓库中）
 - 项目 `tools/<your-project>/项目知识/` 项目任务知识（每日文章自动生成流程） — 定时任务触发的完整生命期
 - [[规章制度/Agent协作/多Agent知识库协作规范]] — Git 协作
