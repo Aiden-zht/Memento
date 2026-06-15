@@ -1,15 +1,3 @@
----
-title: "Memento"
-date: "2026-06-14"
-tags: [知识库, Agent, README, 设计理念]
-category: "索引"
-load: index
-status: active
-synopsis: "Memento 知识库首页：AI-Native 知识底座 + Obsidian 即开即用，让任何 Agent 零记忆接入，自主读规范、建技能、修错误、验产出。"
-version: 9
-changelog: "[agent] 业务解耦更新：业务内容移出 KB，新增业务包通用设计；架构图更新"
----
-
 # Memento
 
 > AI 不会忘。
@@ -20,20 +8,22 @@ changelog: "[agent] 业务解耦更新：业务内容移出 KB，新增业务包
 
 Memento 不是文档仓库。它是一个**自描述、自修复、自验收**的 AI 知识底座。
 
-把文章扔进来，Agent 先评审再消化归类。改了规范，依赖它的技能自动感知更新。新 Agent 拿到仓库路径，不需要任何上下文就能跑通完整任务。
+你只需要做一件事：把文章扔进 `inbox/`。剩下的——分类、格式化、索引、校验、提交——Agent 自己完成。
 
-```
-人 → inbox/（扔文章）        Agent → 评审 → 消化 → 归类 → 入索引
-人 → 对话建立规范             Agent → 写 frontmatter → lint → commit
-人 → 改规范                   Agent → 感知变更 → 自修 skill
-新 Agent → git clone          Agent → AGENTS.md → 索引 → 规范 → 执行
+有了想法就对 Agent 说："以后 X 前必须先 Y"。Agent 会创建规范、补 frontmatter、跑 lint、commit、push。
+
+```text
+人 → 把文档扔进 inbox/         Agent → 评审 → 消化 → 归类 → 入索引
+人 → 对 Agent 说一个想法         Agent → 创建/修改规范 → lint → commit
+人 → 对 Agent 说创建业务包       Agent → 读模板 → 创建 specs/ → 完善规则
+新 Agent → 拿到仓库路径          Agent → AGENTS.md → 索引 → 规范 → 执行
 ```
 
 ---
 
 ## 你能得到什么
 
-**不用管知识库。** 扔文章进 inbox，跟 AI 聊天建立规范，Agent 会先评审是否值得长期入库，再自动分类、格式化、索引、校验。你只负责说话和扔文件。
+**不用管知识库。** 扔文章进 inbox，跟 AI 聊天说想法，Agent 会先评审是否值得长期入库，再自动分类、格式化、索引、校验。你只负责说话和扔文件。
 
 **不会阳奉阴违。** 跟 AI 说"发布前必须校验"——它真的会校验。BLOCKING 规则写在入口，pre-commit hook 拦在提交前，self-check 每次 commit 跑一遍。不是建议，是硬约束。
 
@@ -45,18 +35,18 @@ Memento 不是文档仓库。它是一个**自描述、自修复、自验收**�
 
 ## 架构
 
-```
+```text
 memento/
 ├── AGENTS.md                          ← Agent 冷启动入口
-├── inbox/                             ← 人的投递口（扔文章就行）
+├── inbox/                             ← 你的投递口（扔文章就行）
 ├── 规章制度/                          ← Agent 必须遵守的规则
 │   ├── Agent协作/                    ← 多 Agent git 协作规范
 │   ├── 知识库管理/                   ← KB 自身治理（定位、格式、生命周期、回滚）
 │   └── Cron流水线运维规范/           ← 定时任务运维
-├── 知识/                             ← 用户自建跨领域通用知识（公开版默认不内置）
+├── 知识/                             ← 跨领域通用知识（公开版默认不内置）
 ├── _templates/                        ← 通用模板
 │   └── business-package/             ← 业务包骨架（Agent 创建新业务时以此为模板）
-├── scripts/                          ← 工具链（零 token 消耗）
+├── scripts/                          ← 工具链（Agent 自动调用）
 │   ├── self-check.sh                 ← 8 维健康检查
 │   ├── lint-knowledge-base.sh        ← 格式和链接检查
 │   ├── provides-search.py            ← 语义标签搜索
@@ -76,10 +66,10 @@ memento/
 新 Agent 只知道仓库路径，就能通过 `AGENTS.md` → `任务类型索引` → 规范 完成冷启动。实测：零上下文 Agent 跑通完整业务流水线。
 
 ### 📦 业务包通用设计
-Memento 定义业务包标准结构（`specs/`），但不存放任何业务内容。用户说"新建写作业务"，Agent 读模板 → 创建 specs/ → 对话逐步完善规则。见 `12-业务包通用设计`。
+Memento 定义业务包标准结构（`specs/`），但不存放任何业务内容。你对 Agent 说"新建写作业务"，Agent 读模板 → 创建 specs/ → 对话逐步完善规则。见 `12-业务包通用设计`。
 
 ### 🔧 技能自举
-KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时自动 `git pull` → `provides-search` → 读最新规范，不需要人手动同步。
+KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时自动 `git pull` → `provides-search` → 读最新规范，不需要你手动同步。
 
 ### 🩹 技能自修复
 规范改了，Agent 能自主发现技能中的过时引用并修正。已通过验收测试验证。
@@ -88,7 +78,7 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 每次 `git commit` 自动触发 lint + self-check（8 维度：违禁文件、废弃引用、索引完整性、目录深度、入口断链……）。违规直接拦截。
 
 ### 📦 零门槛使用
-人不需要懂目录结构。文章扔进 `inbox/`，对 Agent 说"消化 inbox"。Agent 先评审价值和质量，再按需补格式、入索引。
+你不需要懂目录结构。文章扔进 `inbox/`，对 Agent 说"消化 inbox"。Agent 先评审价值和质量，再按需补格式、入索引。
 
 ### ✅ 内置验收
 `09-新Agent初始化` 包含通用验收测试，测冷启动、工具发现、技能自举、自修复、多 Agent 隔离。
@@ -103,21 +93,20 @@ KB 规范通过 `requires_provides` 标签声明依赖。Agent 加载技能时�
 
 ## 快速开始
 
-```bash
-git clone https://github.com/Aiden-zht/Memento.git
-cd Memento
-bash scripts/install-hooks.sh
-bash scripts/self-check.sh
+把仓库交给你的 Agent：
+
+```text
+这是我的 Memento 仓库：/path/to/memento。请读取 AGENTS.md，以后按这里的规范工作。
 ```
 
-然后让 Agent 读取 `AGENTS.md`。
+然后你只需要做一件事：把文档扔进 `inbox/`，说"消化 inbox"。有了想法就说"以后 X 前必须先 Y"或"帮我创建一个 Z 业务包"。Agent 会按仓库规范完成一切。
 
-更多步骤见 [[QUICKSTART]]，常见问题见 [[FAQ]]，贡献说明见 [[CONTRIBUTING]]。
+更多见 [[QUICKSTART]]，常见问题见 [[FAQ]]，贡献说明见 [[CONTRIBUTING]]。
 
 ## 公开示例
 
 - [[examples/index]] — 公开脱敏示例入口。
-- [[examples/agent-first-run]] — 新 Agent 首次运行示例。
+- [[examples/agent-first-run]] — 新 Agent 验收测试示例。
 - [[examples/minimal-business-specs/index]] — 最小业务包示例。
 
 ---

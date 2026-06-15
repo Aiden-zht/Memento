@@ -5,14 +5,16 @@ tags: [Memento, 示例, Agent初始化]
 category: "examples"
 load: on-demand
 status: active
-synopsis: "公开版 Agent 首次运行示例：展示新 Agent clone Memento 后如何读入口、跑检查、定位规范和加载最小业务包。"
+synopsis: "公开版 Agent 验收示例：发给新 Agent 的标准验收 prompt，验证其能完成冷启动全流程。"
 version: 2
-changelog: "[agent] 移除面向人的手动提示，改为 Agent 可执行的验收命令格式"
+changelog: "[agent] 面向使用者的提示全部移除，只保留发给 Agent 的验收命令"
 ---
 
 # Agent 首次运行示例
 
-发给一个新 Agent 的验收任务：
+这是一个验收测试——发给你自己的 Agent，验证它能否完成 Memento 冷启动。
+
+发给 Agent：
 
 ```text
 你只知道一个知识库路径：/path/to/memento。
