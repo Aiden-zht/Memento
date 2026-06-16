@@ -24,7 +24,7 @@ changelog: "[agent] 面向使用者的提示全部移除，只保留发给 Agent
 3. 运行 bash scripts/self-check.sh。
 4. 运行 bash scripts/lint-knowledge-base.sh。
 5. 用 python3 scripts/provides-search.py --synopsis 业务包通用设计 Agent行为约束 查找相关规范。
-6. 读取 examples/minimal-business-specs/index.md，说明一个项目如何接入业务包。
+6. 读取 examples/index.md，浏览现有示例文件。说明它们的作用和是否能作为生产规范。
 7. 输出 PASS/FAIL 和原因，不要修改文件。
 ```
 
@@ -34,4 +34,4 @@ changelog: "[agent] 面向使用者的提示全部移除，只保留发给 Agent
 - self-check 能运行。
 - lint 能运行。
 - provides-search 能返回相关规范。
-- Agent 能说明业务规则应放在项目 `specs/`，不是 Memento 核心仓库。
+- Agent 能找到入口文件，按职责读取规范。

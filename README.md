@@ -80,7 +80,7 @@ Memento 对人的使用量极小。你和它之间的交互大概只有这三种
 
 ```bash
 # 1. 克隆
-git clone https://gitee.com/Aiden-zht/Memento.git
+git clone https://github.com/Aiden-zht/Memento.git
 cd Memento
 
 # 2. 安装 git hook（只做一次）
@@ -105,7 +105,7 @@ cp 我的文章.md inbox/
 Agent（首次接入）：
 
 ```
-1. git pull origin master
+1. git pull origin main
 2. 读 AGENTS.md → 确定任务类型
 3. 按索引加载规范 → 执行
 ```
