@@ -7,176 +7,113 @@ load: on-demand
 audience: [all]
 provides: [多Agent协作, git协作规范, 冲突处理, Agent标识]
 status: active
-synopsis: "多 Agent 共享 Memento 时的 git 协作规范：启动先 pull、修改前检查状态、提交标识、冲突处理、按需加载，避免并行覆盖。"
-version: 10
-changelog: "[sync] fix agent_mem residuals → Memento for public branding"
+synopsis: "多 Agent 共享 Memento 时的通用协作规范：启动先同步、修改前检查状态、提交标识、冲突处理、按需加载，避免并行覆盖。"
+version: 11
+changelog: "[Agent自修] 通用化协作规范，剥离平台/项目/业务示例并统一 no-rebase 策略"
 versions:
-  多Agent协作: 8
-  git协作规范: 4
-  session启动检查: 4
-  commit规范: 4
-  冲突处理: 4
+  多Agent协作: 9
+  git协作规范: 5
+  session启动检查: 5
+  commit规范: 5
+  冲突处理: 5
 ---
 
 # 多 Agent 知识库协作规范
 
-> **适用范围**：基础设施层 — 所有使用本知识库的 Agent 必须遵守；涉及 KB 写入、commit/push、冲突处理或多 Agent 协作时按需加载正文。
-> 定义多个 Agent/会话共用一个 Git 知识库时的变更感知、commit 格式、冲突处理。
->
-> ⚠️ 本文档与「公众号发布流程与质量规范」中的 Agent A/B 流水线是不同维度的概念：
-> - 本文档 = Agent 之间如何协作（git 层面）
-> - 发布流程 = Agent 之间如何分工完成特定任务（业务层面）
-
----
+> 适用范围：多个 Agent、多个会话或人机共同维护同一个 Git 知识库时使用。本文只规定协作纪律，不规定具体业务分工。
 
 ## 1. 核心原则
 
-**git commit message = 变更通知**。Agent 写清楚 commit，其他 Agent 看一眼 `git log` 就知道发生了什么。
+1. 知识库以 Git 远端为共享事实源；修改前先同步，修改后必须提交并推送。
+2. commit message 是 Agent 之间的变更通知；必须写清谁改了什么、为什么改。
+3. 冲突时先理解对方提交意图，再合并；不要用本地记忆覆盖远端新规则。
+4. “必须遵守”不等于“每次全文加载”；普通任务从任务入口开始，涉及协作、写库、冲突时再加载本文正文。
 
----
+## 2. Session 启动检查
 
-## 2. Session 启动检查清单
-
-每个 Agent 在操作知识库前，必须执行三步：
+每个 Agent 在操作知识库前执行：
 
 ```bash
-cd {{WORKSPACE}}/Memento
-
-# Step 1: 拉取最新
-git pull origin main
-
-# Step 2: 查看新增 commit（只展示自上次以来的变更）
-LAST_SEEN=$(cat .last_seen_commit 2>/dev/null || echo "")
-if [ -n "$LAST_SEEN" ] && git rev-parse --verify "$LAST_SEEN" >/dev/null 2>&1; then
-    echo "===== 其他 Agent 的变更 ====="
-    git log --oneline "$LAST_SEEN..HEAD" 2>/dev/null
-else
-    git log --oneline -5
-fi
-
-# Step 3: 保存当前 HEAD
-git rev-parse HEAD > .last_seen_commit
+cd <memento-repo>
+git pull --no-rebase origin <default-branch>
+git status --short
+git log --oneline -5
 ```
 
-**或直接运行**：`bash scripts/pull-and-check.sh`
-**注意 ，本质是共用一个git仓库内的知识库 ，路径视当前模型对接的该仓库目录**
-
----
+如果仓库维护了 `.last_seen_commit`，可用它查看其他 Agent 自上次以来的变更；该文件只是本地辅助状态，不是知识内容。
 
 ## 3. 知识库加载策略
 
-Agent 启动时按以下优先级选择性加载知识库内容：
+默认冷启动入口：
 
-| 层级 | 目录 | 加载规则 |
-|------|------|----------|
-| L1 - 必读 | `规章制度/` | 仅加载以下 4 个核心文件，其他按 `on-demand` |
-| L2 - 按需 | `专业知识/` | 按任务领域选择加载（GPU、面试等） |
-| L3 - 业务 | `产物规范/ 或 项目知识/<项目>/` | 仅当任务属于该领域时加载 |
-| L4 - 项目 | `项目知识/<项目>/` | 按项目选择加载 |
-
-> **默认加载路径**：`AGENTS.md` + `规章制度/知识库管理/任务类型索引.md`。
-> 其他治理正文按任务需要加载：涉及 KB 写入/协作/冲突时加载本文；涉及 Agent 初始化时加载 `09-新Agent初始化.md`；涉及行为边界或本地实现同步时加载 `07-Agent行为约束.md`。
->
-> Hermes Agent 的 system prompt 已包含 git pull、git add+commit+push、唯一信源等核心约束，Agent 可从任务类型索引起步，不必每次全量加载 5 个 L1 文件。
->
-> `规章制度/` 下其他文件（知识库定位、存什么、目录分类、文件规范等）按 `load: on-demand` 对待，仅当涉及知识库写入/创建/治理时按需加载。
-
-**示例**：
-- 公众号发文 Agent → 任务索引 + 公众号相关规范；仅在改 KB 时加载协作规范
-- 面试准备 Agent → 任务索引 + `专业知识/面试经验/` 相关文件
-- 抖音新业务 Agent → 任务索引 + 新业务接入/写作通用规范；需要创建 KB 文件时再加载治理规范
-
----
-
-## 4. Commit Message 格式规范
-
-```
-[agent-标识] 简短描述 — 变动文件列表
+```text
+AGENTS.md → 任务类型索引 → index/synopsis → 按需正文
 ```
 
-### 格式说明
+加载规则：
 
-| 字段 | 说明 | 示例 |
-|------|------|------|
-| `[agent-标识]` | 谁做的修改 | `[写作-AgentA]`, `[大钱-主控]`, `[deepseek-chat]` |
-| 简短描述 | 一句话说清做了什么 | `修复 freepublish 说明` |
-| 变动文件 | 逗号分隔受影响文件（可选但推荐） | `— API开发手册.md, 面试经验.md` |
+| 场景 | 加载 |
+|------|------|
+| 普通任务 | 任务类型索引 + 任务相关规范 |
+| 写入/修改 KB | 知识库治理规范 + 本文 |
+| 多 Agent 并行或冲突 | 本文 + 相关文件 diff/log |
+| 新 Agent 初始化 | 新 Agent 初始化规范 + 本文 |
 
-### 完整示例
+不要把整个 `规章制度/` 当作每次必读全文；按任务需要加载正文即可。
+
+## 4. Commit Message 规范
+
+推荐格式：
+
+```text
+[agent:<标识>] <动作和目的> — <关键文件或范围>
+```
+
+示例：
 
 ```bash
-git add .
-git commit -m "[写作-AgentA] 修复公众号API手册 freepublish 说明 + 扩展面试tags — 公众号API开发手册.md, 面试经验.md"
-git push origin main
+git commit -m "[agent:reviewer] 修复目录索引断链 — 规章制度/index.md"
 ```
 
-### 命名约定
+要求：
 
-- 用 agent 标识或模型名（如 `写作-AgentA`, `deepseek-chat`, `qwen`）
-- 固定使用一个名称，方便追溯
-- 不建议用 `agent-A` / `agent-B`，因为不明确
-
----
+1. 标识稳定，能区分不同 Agent / profile / 人工维护者。
+2. 描述使用结果导向，不写“更新一下”这类无信息文本。
+3. 涉及规范裁定时，说明裁定对象；涉及大范围迁移时，说明范围。
 
 ## 5. 冲突处理
 
-### 如果 push 被拒绝（其他 Agent 已推送）
+当 push 被拒绝或 pull 后出现冲突：
 
 ```bash
-# 1. 先拉取
-git pull origin main --rebase
-
-# 2. 如果有冲突，解决后
-# 3. 重新推送
-git push origin main
+git pull --no-rebase origin <default-branch>
+git status --short
+git log --oneline -5
 ```
 
-### 防止覆盖
+处理原则：
 
-- **永远在修改前 pull**
-- **永远用 `--rebase` 而非 merge，保持历史线性**
-- 如果 pull 后发现自己在同一个文件有冲突，先看对方的 commit message 了解其意图
+1. 先读对方最新 commit 和冲突段上下文，再编辑。
+2. 优先向前合并，保留双方有效规则；不要为了线性历史强行 rebase。
+3. 冲突解决后运行知识库验证，再 commit + push。
+4. 如果冲突涉及治理裁定、入口权威链或目录模型，必要时追加治理复盘。
 
----
+## 6. 长编辑协作
 
-## 6. 文件锁约定（可选，用于长文档编辑）
+如果某个 Agent 会长时间编辑同一批文件，先提交一个小的意图性 commit 或在当前协作渠道说明范围：
 
-如果某个 Agent 将花费 10+ 分钟编辑同一文件，可以在 commit message 中附加：
-
-```
-[写作-AgentA] 正在编辑GPU分享.md - 预计30分钟完成
-```
-
-其他 Agent 看到这条 commit 后，暂不修改该文件。完成后再提交并注明 `— 完成GPU分享.md`。
-
----
-
-## 7. 相关文档
-
-- 游戏折扣Agent — 项目协作（项目文档在 `{{WORKSPACE}}/tools/<your-project>/`）
-
----
-
-## 附录：pull-and-check.sh 脚本
-
-脚本位置：`scripts/pull-and-check.sh`
-
-Agent 调用方式：
-```bash
-bash {{WORKSPACE}}/references/agent_mem/scripts/pull-and-check.sh
+```text
+[agent:<标识>] 开始整理 <范围>，预计影响 <文件/目录>
 ```
 
-输出示例：
-```
-===== 其他 Agent 的变更 =====
-c9eb934 [deepseek-chat] 新增字节跳动大模型SRE面经 — 面试经验.md
-41e8d34 [写作-AgentA] 补充公众号运营策略文档 — 公众号运营策略.md
-===== 当前 HEAD: 1559c08 =====
-```
+其他 Agent 看到后应避免同时修改同一范围；完成后提交最终变更并说明结果。
 
----
+## 7. 与业务流水线的边界
 
-## 相关文档
+本文只管“多个 Agent 如何共用知识库和 Git”。具体业务中的审核者、发布者、评分者等角色分工，属于对应的产物规范或项目知识，不写入本文。
 
-- [[规章制度/知识库管理/知识库内容治理规范/index]] — 定义知识库的内容边界和文件规范
-- [[index]] — 知识库目录和索引
+## 8. 相关文档
+
+- [[规章制度/知识库管理/知识库内容治理规范/index]] — 知识库内容边界和文件规范
+- [[规章制度/知识库管理/任务类型索引]] — 任务路由入口
+- [[index]] — 知识库目录入口
