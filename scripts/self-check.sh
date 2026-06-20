@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 
 FAILS=0
 TOTAL=8
-EXCLUDE_DIRS="! -path ./.git ! -path ./.git/* ! -path ./_templates ! -path ./_templates/* ! -path ./scripts ! -path ./scripts/* ! -path ./.obsidian ! -path ./.obsidian/* ! -path ./inbox ! -path ./inbox/*"
+FORMAL_ROOTS=(规章制度 产物规范 专业知识 素材库 项目知识 用户资料)
 
 # ── S1: 黑名单违禁 ──────────────────────────────────────────────
 S1_FILES=$(find . \( -name '*.html' -o -name '*.jpg' -o -name '*.png' -o -name '*.json' -o -path '*/output/*' \) \
@@ -41,9 +41,13 @@ else
     FAILS=$((FAILS + 1))
 fi
 
-# ── S3: 索引完整性 ────────────────────────────────────────────────
-S3_DIRS=$(find . -name '*.md' -type f ! -path './.git/*' ! -path './_templates/*' ! -path './scripts/*' ! -path './inbox/*' \
-    | sed 's|/[^/]*\.md$||' | sort -u | grep -v '^.$')
+# ── S3: 正式目录索引完整性 ────────────────────────────────────────
+S3_DIRS=$(
+    for root in "${FORMAL_ROOTS[@]}"; do
+        [ -d "$root" ] || continue
+        find "$root" -name '*.md' -type f
+    done | sed 's|/[^/]*\.md$||' | sort -u
+)
 S3_TOTAL=0
 S3_MISSING=0
 S3_LIST=""
@@ -58,7 +62,7 @@ done <<< "$S3_DIRS"
 if [ "$S3_MISSING" -eq 0 ]; then
     S3_MSG="PASS ($S3_TOTAL/$S3_TOTAL)"
 else
-    S3_MSG="FAIL: $S3_MISSING 缺索引 ($S3_TOTAL 总)"
+    S3_MSG="FAIL: $S3_MISSING 正式目录缺索引 ($S3_TOTAL 总)"
     FAILS=$((FAILS + 1))
 fi
 
@@ -75,7 +79,12 @@ fi
 
 # ── S5: Git 清洁度 ────────────────────────────────────────────────
 S5_UNCOMMITTED=$(git status --porcelain 2>/dev/null | wc -l)
-S5_UNPUSHED=$(git log origin/main..HEAD --oneline 2>/dev/null | wc -l || echo 0)
+UPSTREAM_REF=$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream} 2>/dev/null || echo "")
+if [ -n "$UPSTREAM_REF" ]; then
+    S5_UNPUSHED=$(git log "${UPSTREAM_REF}"..HEAD --oneline 2>/dev/null | wc -l)
+else
+    S5_UNPUSHED=0
+fi
 if [ "$S5_UNCOMMITTED" -eq 0 ] && [ "$S5_UNPUSHED" -eq 0 ]; then
     S5_MSG="PASS (clean)"
 elif [ "$S5_UNCOMMITTED" -gt 0 ] && [ "$S5_UNPUSHED" -eq 0 ]; then
@@ -150,8 +159,8 @@ else
 fi
 
 # ── S7: 文件膨胀趋势 ──────────────────────────────────────────────
-S7_TOTAL_FILES=$(find . -name '*.md' ! -path './.git/*' ! -path './_templates/*' | wc -l)
-S7_TOTAL_LINES=$(find . -name '*.md' ! -path './.git/*' ! -path './_templates/*' -exec cat {} + 2>/dev/null | wc -l)
+S7_TOTAL_FILES=$(find . -name '*.md' ! -path './.git/*' ! -path './_templates/*' ! -path './docs/superpowers/specs/*' | wc -l)
+S7_TOTAL_LINES=$(find . -name '*.md' ! -path './.git/*' ! -path './_templates/*' ! -path './docs/superpowers/specs/*' -exec cat {} + 2>/dev/null | wc -l)
 # 周新增: 排除首提交（避免新仓库把所有文件算作"本周新增"）
 ROOT_COMMIT=$(git rev-list --max-parents=0 HEAD 2>/dev/null)
 S7_WEEK_NEW=$(git log --diff-filter=A --name-only --since='7 days ago' --format='' -- '*.md' 2>/dev/null \

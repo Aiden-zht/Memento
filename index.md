@@ -17,7 +17,7 @@ versions:
 
 # Memento 索引
 
-> Git: https://gitee.com/Aiden-zht/Memento.git
+> Git: https://github.com/Aiden-zht/Memento.git
 > 冷启动入口：[[AGENTS]]
 > 内容治理：[[规章制度/知识库管理/知识库内容治理规范/index]]
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Audit whether the KB is safe and useful for Agent runtime loading.
 
-This complements lint-knowledge-base.sh. Lint checks document hygiene;
-this script checks common Agent-use failure modes: template leakage,
-scaffold indexes pretending to be active, draft files linked from active
-indexes without an explicit warning, and placeholder wiki-links.
+This complements lint-knowledge-base.sh and self-check.sh. Lint checks
+document hygiene; self-check checks structural health of formal
+knowledge roots; this script checks runtime failure modes in formal
+knowledge and entry documents.
 """
 from __future__ import annotations
 
@@ -13,7 +13,26 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MD_FILES = [p for p in ROOT.rglob("*.md") if ".git" not in p.parts]
+FORMAL_ROOTS = {"规章制度", "产物规范", "专业知识", "素材库", "项目知识", "用户资料"}
+ENTRY_DOCS = {
+    Path("AGENTS.md"),
+    Path("README.md"),
+    Path("index.md"),
+    Path("规章制度/知识库管理/任务类型索引.md"),
+}
+IGNORED_PREFIXES = (
+    Path("_templates"),
+    Path("docs/superpowers/specs"),
+)
+MD_FILES = []
+for p in ROOT.rglob("*.md"):
+    if ".git" in p.parts:
+        continue
+    relp = p.relative_to(ROOT)
+    if any(relp == prefix or prefix in relp.parents for prefix in IGNORED_PREFIXES):
+        continue
+    if relp in ENTRY_DOCS or (relp.parts and relp.parts[0] in FORMAL_ROOTS):
+        MD_FILES.append(p)
 
 WIKI_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|[^\]]+)?\]\]")
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n", re.S)
@@ -54,14 +73,6 @@ def main() -> int:
     errors: list[str] = []
     warnings: list[str] = []
 
-    # ── E_AGENT_HOOK_MISSING: pre-commit hook not installed ──
-    hook_path = ROOT / ".git" / "hooks" / "pre-commit"
-    if not hook_path.is_file():
-        errors.append(
-            f"E_AGENT_HOOK_MISSING .git/hooks/pre-commit: pre-commit hook not installed; "
-            f"run: bash scripts/install-hooks.sh"
-        )
-
     frontmatter: dict[str, dict[str, str]] = {}
     texts: dict[str, str] = {}
 
@@ -77,15 +88,6 @@ def main() -> int:
         load = fm.get("load", "")
         status = fm.get("status", "")
 
-        if key.startswith("_templates/"):
-            if load != "template":
-                errors.append(f"E_AGENT_TEMPLATE_LOAD {key}: template file must use load: template")
-            if status != "scaffold":
-                errors.append(f"E_AGENT_TEMPLATE_STATUS {key}: template file must use status: scaffold")
-            for required in ["synopsis", "version", "changelog"]:
-                if not fm.get(required):
-                    errors.append(f"E_AGENT_TEMPLATE_META {key}: missing {required}")
-
         if status in {"draft", "scaffold", "deprecated"} and load in {"index", "always"}:
             warnings.append(f"W_AGENT_NONACTIVE_ENTRY {key}: {status} file uses load: {load}; only load explicitly for construction/maintenance tasks")
 
@@ -93,9 +95,10 @@ def main() -> int:
             if marker in text:
                 errors.append(f"E_AGENT_PLACEHOLDER_LINK {key}:{line_no(text, marker)} placeholder wikilink must be plain text, not a real link")
 
+    runtime_entries = {"AGENTS.md", "README.md", "index.md", "规章制度/知识库管理/任务类型索引.md"}
     for key, text in texts.items():
         fm = frontmatter[key]
-        if fm.get("status") != "active" or fm.get("load") != "index":
+        if key not in runtime_entries and not (fm.get("status") == "active" and fm.get("load") in {"default", "index"}):
             continue
         for raw_target in WIKI_RE.findall(text):
             target = target_path(raw_target)

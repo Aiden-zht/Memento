@@ -5,9 +5,9 @@ tags: [知识库, Agent, 初始化, 冷启动, 入口]
 category: "规章制度/知识库管理"
 load: default
 status: active
-synopsis: "新 Agent 冷启动入口——Memento 零记忆接入的第一步：git pull → 任务能力 → 任务模式 → 任务类型索引 → 按需加载。"
-version: 11
-changelog: "[Agent自修] git 副作用口径统一引用任务类型索引，硬规则只保留入口与检查动作"
+synopsis: "新 Agent 冷启动最短入口：git pull → 任务类型索引 → 项目/产物入口 → 按需正文；治理细节仅在 KB 维护时加载。"
+version: 12
+changelog: "[Agent自修] 收缩为运行时最短入口，任务能力索引和治理规范降为 KB 维护按需加载"
 ---
 
 # AGENTS.md — Memento 冷启动入口
@@ -21,11 +21,11 @@ git pull origin main
 
 然后先阅读：
 
-1. `规章制度/知识库管理/任务能力索引.md`
-2. `规章制度/知识库管理/任务类型索引.md`
+1. `规章制度/知识库管理/任务类型索引.md`
 
-仅在任务涉及 KB 写入、Agent 初始化、skill/cron/脚本同步或行为边界判断时，再按需读取：
+仅在任务涉及 KB 维护时，再按需读取：
 
+- `规章制度/知识库管理/任务能力索引.md`
 - `规章制度/知识库管理/知识库内容治理规范/00-读取规范.md`
 - `规章制度/知识库管理/知识库内容治理规范/09-新Agent初始化.md`
 - `规章制度/知识库管理/知识库内容治理规范/07-Agent行为约束.md`
@@ -33,7 +33,7 @@ git pull origin main
 执行任务时使用固定流程：
 
 ```text
-任务能力判定（读库 / 写库 / 消化 inbox / 健康检查 / 存废审计 / 迁移重构 / 执行层对齐）→ 任务模式判定（普通产出 / KB 使用 / KB 维护）→ 任务类型索引 → 关键词全文搜索 → 读候选 frontmatter → 按 type/status/load/source/confidence/load_when 筛选 → 按需读取正文 → 执行 → 必要时 lint/commit/push
+git pull → 任务模式判定（普通产出 / KB 使用 / KB 维护）→ 任务类型索引 → 进入项目/产物入口 → 关键词全文搜索兜底 → 读必要正文 → 执行
 ```
 
 ## 业务任务
@@ -41,7 +41,7 @@ git pull origin main
 执行业务任务（如"发布文章"）时，额外执行：
 
 1. 在 Memento 仓库检查 `项目知识/<项目>/index.md`
-2. 若存在 → 读 `depends_on` → 加载 Memento 对应规范 → 加载项目任务知识规则和参考
+2. 若存在 → 读该项目入口的 `depends_on` 和目录说明 → 加载对应规范
 3. 若不存在 → 按 `规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计` 引导用户在 Memento 内创建
 
 ## 创建新业务
@@ -52,11 +52,11 @@ git pull origin main
 
 硬规则：
 
-- 执行前先判定任务能力和任务模式：默认普通产出；只有明确 KB 维护意图才允许修改 Memento。
+- 执行前先判定任务模式：默认普通产出；只有明确 KB 维护意图才允许修改 Memento。
 - 不靠记忆猜规范；先查 KB。
-- `provides` 只是辅助标签；搜不到时用全文搜索兜底。
-- 新增或修改 `.md` 必须符合最小 frontmatter；核心规范和执行层依赖文件才必须更新 `version/changelog`。
-- 改 KB 后必须运行 `bash scripts/lint-knowledge-base.sh`。
+- 运行时以 `任务类型索引.md` 为唯一任务路由；`provides` 只是辅助标签，搜不到时用全文搜索兜底。
+- 新增或修改 `.md` 时，运行时最小判断字段优先看 `title/status/load/synopsis`；更细字段只在治理任务按需检查。
+- 改 KB 后至少运行 `bash scripts/lint-knowledge-base.sh`、`python3 scripts/audit-agent-usability.py`、`bash scripts/self-check.sh`。
 - **git 副作用（`git add / commit / push`）以 [[规章制度/知识库管理/任务类型索引]] 为唯一 BLOCKING 裁定源：普通产出模式和 KB 使用模式禁止 git 副作用，KB 维护模式仅在用户授权或维护流程明示时才允许。**
 - 中间状态、生成产物、日志、图片二进制不入 KB。
 - 项目长期规则和事实默认进入本仓库 `项目知识/<项目>/`；代码、运行状态、日志和生成产物不入 KB。

@@ -6,8 +6,8 @@ category: "索引"
 load: index
 status: active
 synopsis: "Memento 知识库首页：AI-Native 知识底座 + Obsidian 即开即用，让任何 Agent 零记忆接入，自主读规范、建技能、修错误、验产出。"
-version: 19
-changelog: "[sync] fix agent_mem residuals → Memento for public branding"
+version: 18
+changelog: "[Agent自修] 新增计划章节，记录封版后 todo"
 ---
 
 # Memento
@@ -158,7 +158,7 @@ Memento/
 ## 设计原则
 
 1. **给 Agent 用** — 文档服务检索和执行，不是人在浏览器里逐页浏览
-2. **任务入口优先** — 任务能力索引 + 任务类型索引 + 全文搜索 > 目录导航
+2. **任务入口优先** — AGENTS + 任务类型索引 + 项目/产物入口 + 全文搜索 > 目录导航
 3. **用 Agent 原生能力** — 不造受控词表、不建集中式 manifest
 4. **简化优先** — 新增机制前先问：能减少 Agent 漏读/误读吗？
 5. **硬规则前置** — BLOCKING 规则写在入口，Agent 不能跳过
@@ -193,4 +193,4 @@ MIT License — 详见 [[LICENSE]]
 - [[index]] — KB 主索引
 - [[规章制度/知识库管理/任务类型索引]] — 任务路由和 BLOCKING 规则
 - [[规章制度/知识库管理/知识库内容治理规范/index]] — 治理规范总览
-- [[规章制度/知识库管理/任务能力索引]] — Agent 能做哪些事
+- [[规章制度/知识库管理/任务能力索引]] — KB 维护任务参考入口

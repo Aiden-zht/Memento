@@ -8,8 +8,8 @@ audience: [all]
 provides: [Agent行为约束, 读取优先级, 写入检查, 禁止行为, 内容寻址, 规范优化反馈, 职责边界, KB-memory仲裁, 本地实现同步, 项目任务知识发现, 推送纪律, 用户产物优先, 任务模式判定, 使用前检查, 目录审计]
 status: active
 synopsis: "规定 Agent 读写 KB、按需检索、使用前检查、规范反馈、KB-memory 仲裁，以及 KB 规范变更后本地 skill/cron/脚本如何同步实现。"
-version: 27
-changelog: "[sync] fix agent_mem residuals → Memento for public branding"
+version: 28
+changelog: "[sync] public sync: align execution-layer dependency scope and replace private skill examples"
 versions:
   Agent行为约束: 18
   读取优先级: 4
@@ -101,11 +101,11 @@ Agent 读取知识库时，按以下优先级：
 
 正确路径：
 
-1. **任务入口**：先读 `规章制度/知识库管理/任务类型索引.md`，确认任务类型、关键词、BLOCKING 规则和最低验证。任务类型索引是唯一任务路由与 BLOCKING 执行入口；`强制规则索引` 只作 archived 审计摘要，不进入普通冷启动链。
+1. **任务入口**：先读 `规章制度/知识库管理/任务类型索引.md`，确认任务类型、关键词、BLOCKING 规则和维护任务的验证要求。任务类型索引是唯一任务路由与 BLOCKING 执行入口；`任务能力索引` 只在 KB 维护任务中用于细分维护动作；`强制规则索引` 只作 archived 审计摘要，不进入普通冷启动链。
 2. **发现候选**：用全文搜索定位候选文件。
    - Hermes Agent：`search_files(pattern="关键词", target="content")`
    - Shell：`rg "关键词" --include="*.md" -l`
-3. **筛选候选**：读候选文件 frontmatter，优先看 `type`、`status`、`load`、`synopsis`、`source`、`confidence`、`load_when`。
+3. **筛选候选**：读候选文件 frontmatter，运行时优先看 `title`、`status`、`load`、`synopsis`；治理任务再按需检查 `type`、`source`、`confidence`、`load_when`。
 4. **使用前检查**：确认目录 index 和文件 frontmatter 允许在当前任务使用。
 5. **辅助确认**：`provides/requires` 用于确认语义标签和执行层依赖，但不是唯一入口。
 6. **跟随链接**：业务流程文件中的 wiki-link 是依赖链，必要时继续加载。
@@ -199,13 +199,13 @@ KB 的职责是补 Agent 的短板，而不是替代 Agent 原生能力。新增
 - `requires_provides` 是依赖声明，必须保留。
 - `spec_versions` 是可选状态，不是默认要求；只有硬编码脚本、长期 cron 状态追踪、无法运行时加载 KB 的实现才需要。
 - 默认同步方式不是"版本记账"，而是"运行时读取最新 KB + Agent 判断是否影响实现"。
-- 闭环只在规则、目录结构、任务入口、Agent 行为、frontmatter/provides/requires、`kb_refresh_policy`、产物规范、项目契约，或被 skill/cron/script/AGENTS.md/任务入口依赖时触发；普通素材、用户资料、参考知识不强制声明 `requires_provides`。
+- 闭环只在 [[规章制度/知识库管理/执行层依赖文件清单]] 定义的依赖点、规则、目录结构、任务入口、Agent 行为、frontmatter/provides/requires、`kb_refresh_policy`、产物规范、项目契约变化时触发；普通素材、用户资料、参考知识不强制声明 `requires_provides`。
 
 ### 7.6.0 规则变更后的最小只读验收
 
 KB 只颁布规则，不管理执行层实现；但规则变更完成前，Agent 必须做最小只读验收，防止旧规则仍在生产执行层运行。
 
-触发条件：修改 KB 规则、目录结构、任务入口、Agent 行为、frontmatter/provides/requires、`kb_refresh_policy`、产物规范或项目契约。
+触发条件：修改 [[规章制度/知识库管理/执行层依赖文件清单]] 中的依赖点，或修改目录结构、任务入口、Agent 行为、frontmatter/provides/requires、`kb_refresh_policy`、产物规范或项目契约。
 
 验收协议见 [[规章制度/知识库管理/KB-执行层只读验收协议]]。本地实现的验收结果只出三种状态：
 
@@ -219,13 +219,13 @@ KB 只颁布规则，不管理执行层实现；但规则变更完成前，Agent
 
 必须执行运行时规范对齐的本地实现：
 
-> **项目任务知识**：除 skill/cron/脚本外，项目 `项目知识/` 项目任务知识的 `index.md` 也必须声明 `depends_on`（等价于 `requires_provides`）和 `kb_refresh_policy: runtime`，执行前读取最新 KB 并判断变更影响。详见 [[规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计]]。
+> **项目任务知识**：除 skill/cron/脚本外，项目 `项目知识/` 项目任务知识的 `index.md` 也必须声明少数稳定 `depends_on`（等价于 `requires_provides`）和 `kb_refresh_policy: runtime`，执行前读取最新 KB 并判断变更影响。详见 [[规章制度/知识库管理/知识库内容治理规范/12-项目任务知识接入设计]]。
 
 
 
 | 类型 | 条件 | 示例 |
 |------|------|------|
-| 生产 skill | 依赖 KB 规范才能正确执行 | <your-project>、<validator-agent>、<kpi-agent> |
+| 生产 skill | 依赖 KB 规范才能正确执行 | <your-project-skill>、content-validator、agent-kpi |
 | cron job | 定时执行业务流程或规范校验 | 每日 Steam 折扣文章流水线 |
 | 本地脚本 | 代码中硬编码了 KB 规则、阈值、流程 | content_generator.py、validator 脚本 |
 
