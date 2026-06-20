@@ -9,7 +9,7 @@ provides: [知识库管理索引]
 status: active
 synopsis: "知识库管理入口：指向任务类型索引、当前治理规范和治理重构复盘，用于判断 KB 如何检索、维护、删改和验证。"
 version: 13
-changelog: "[Agent自修] 新增执行层依赖文件清单入口，收缩 skill/cron/脚本的依赖面"
+changelog: "[sync] public sync: keep knowledge-management index focused on public framework entry points"
 versions:
   知识库管理索引: 12
 ---
